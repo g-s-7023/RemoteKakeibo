@@ -25,10 +25,7 @@ class Constants{
         const val KAKEIBO_ISDELETED = 11
         const val KAKEIBO_ISSYNCHRONIZED = 12
         const val KAKEIBO_LASTUPDATEDDATE = 13
-        //===
-        //=== row number of input "detail"
-        //===
-        val PREF_DETAIL = arrayOf("1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th")
+
         //===
         //=== index of type
         //===
@@ -80,9 +77,6 @@ class Constants{
         //=== format of date
         //===
         const val sdf = "yyyy/MM/dd/kk:mm:ss"
-        //===
-        //=== preference name of detail history
-        //===
-        const val DETAIL_HISTORY = "DETAIL_HISTORY"
+
     }
 }
