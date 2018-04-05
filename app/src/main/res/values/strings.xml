@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">RemoteKakeibo</string>
 
+    <!-- text of views -->
     <string name="action_settings">Settings</string>
     <string name="iv_listType">収入/支出</string>
     <string name="tv_price">金額</string>
@@ -46,7 +47,12 @@
 
     <string name="msg_dberror">登録できませんでした</string>
 
-    <!-- 費目のリスト -->
+    <!-- sentence -->
+    <string name="show_year">%1$d年</string>
+    <string name="show_monthday">%1$d/%2$d</string>
+    <string name="show_dayofweek">(%1$s)</string>
+
+    <!-- list of category -->
     <string-array name="lv_category_and_detail">
         <item>外食(朝)</item>
         <item>外食(昼)</item>

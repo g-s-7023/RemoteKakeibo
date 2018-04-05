@@ -5,19 +5,25 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import g_s_org.androidapp.com.remotekakeibo.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), KakeiboInputFragment.OnFragmentInteractionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // set view
         setContentView(R.layout.activity_main)
         // set fragment
-        val fragment = supportFragmentManager.findFragmentById(R.id.container)
-        supportFragmentManager.beginTransaction().replace(R.id.container, )
+        supportFragmentManager.beginTransaction().replace(R.id.container, KakeiboAddFragment())
+    }
 
-
-
-
-
-
+    override fun changePage(to: Fragment) {
+        // replace current fragment for "to"
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.container, to).addToBackStack(null).commit()
+    }
+    override fun backPage(from: Fragment) {
+        // remove current fragment and pop backstack
+        val manager = supportFragmentManager
+        manager.beginTransaction().remove(from).commit()
+        manager.popBackStack()
     }
 }

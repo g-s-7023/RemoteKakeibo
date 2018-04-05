@@ -1,20 +1,35 @@
 package g_s_org.androidapp.com.remotekakeibo.common
 
 import java.time.DayOfWeek
+import java.time.Year
 import java.util.*
 
 /**
  * Created by C170044 on 2018/04/03.
  */
 class KakeiboDate(var year:Int = 1900, var month:Int = 1, var day:Int = 1, var dayOfWeek: Int = 1) :Cloneable{
-    constructor(cal: Calendar):
-            this(cal.get(Calendar.YEAR),cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.DAY_OF_WEEK))
-
-    // calculate dayOfWeek from date
-    fun setDayOfWeek(y: Int, m: Int, d: Int){
+    // set value from calendar
+    fun setDate(cal:Calendar){
+        year = cal.get(Calendar.YEAR)
+        month = cal.get(Calendar.MONTH)
+        day = cal.get(Calendar.DAY_OF_MONTH)
+        dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+    }
+    // set values and calculate dayOfWeek from date
+    fun setDate(y: Int, m: Int, d: Int){
+        year = y
+        month = m
+        day = d
         val cal = Calendar.getInstance()
         cal.set(y, m, d)
         dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+    }
+    // set values
+    fun setDate(y: Int, m: Int, d: Int, w: Int) {
+        year = y
+        month = m
+        day = d
+        dayOfWeek = w
     }
     // compare date
     fun compareDate(date: KakeiboDate): Boolean {

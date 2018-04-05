@@ -30,7 +30,7 @@ class DetailHistoryAccess() {
         editor.commit()
     }
     // insert new value to destination array
-    tailrec fun insertPreference(src: SharedPreferences, dst: Array<String>, dstIndex: Int, keys: Array<String>, keyIndex: Int, input: String): Array<String> {
+    private tailrec fun insertPreference(src: SharedPreferences, dst: Array<String>, dstIndex: Int, keys: Array<String>, keyIndex: Int, input: String): Array<String> {
         when (dstIndex) {
             0 -> {
                 // the head is replaced by input value
