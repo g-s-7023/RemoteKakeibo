@@ -1,13 +1,491 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="g_s_org.androidapp.com.remotekakeibo.view.CalendarDialogFragment">
-
-    <!-- TODO: Update blank fragment layout -->
+    android:layout_height="match_parent">
+    <!-- 前月ボタン -->
+    <Button
+        android:id="@+id/bt_previous_calendar"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/calendar_height"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:text="@string/bt_previousmonth_calendar"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@color/white"
+        android:background="@drawable/buttons"/>
+    <!-- 年月 -->
     <TextView
+        android:id="@+id/tv_yearAndMonth_calendar"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/calendar_height"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@color/white"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/noborder"/>
+    <!-- 翌月ボタン -->
+    <Button
+        android:id="@+id/bt_next_calendar"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/calendar_height"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:text="@string/bt_nextmonth_calendar"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@color/white"
+        android:background="@drawable/buttons"/>
+    <!-- 日にち -->
+    <TableLayout
+        android:id="@+id/tl_days"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
-
-</FrameLayout>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bt_previous_calendar"
+        android:layout_marginTop="3dp"
+        android:stretchColumns="0,1,2,3,4,5,6">
+        <!-- 曜日 -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+            <TextView
+                android:id="@+id/tv_sunday"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/tv_sunday"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/noborder" />
+            <TextView
+                android:id="@+id/tv_monday"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/tv_monday"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/noborder" />
+            <TextView
+                android:id="@+id/tv_tuesday"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/tv_tuesday"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/noborder" />
+            <TextView
+                android:id="@+id/tv_wednesday"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/tv_wednesday"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/noborder" />
+            <TextView
+                android:id="@+id/tv_thursday"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/tv_thursday"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/noborder" />
+            <TextView
+                android:id="@+id/tv_friday"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/tv_friday"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/noborder" />
+            <TextView
+                android:id="@+id/tv_saturday"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/tv_saturday"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/noborder" />
+        </TableRow>
+        <!-- 1週目 -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+            <TextView
+                android:id="@+id/bt_01"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_02"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_03"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_04"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_05"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_06"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_07"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+        </TableRow>
+        <!-- 2週目 -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+            <TextView
+                android:id="@+id/bt_11"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_12"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_13"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_14"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_15"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_16"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_17"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+        </TableRow>
+        <!-- 3週目 -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+            <TextView
+                android:id="@+id/bt_21"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_22"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_23"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_24"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_25"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_26"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_27"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+        </TableRow>
+        <!-- 4週目 -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+            <TextView
+                android:id="@+id/bt_31"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_32"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_33"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_34"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_35"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_36"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_37"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+        </TableRow>
+        <!-- 5週目 -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+            <TextView
+                android:id="@+id/bt_41"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_42"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_43"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_44"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_45"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_46"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_47"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+        </TableRow>
+        <!-- 6週目 -->
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+            <TextView
+                android:id="@+id/bt_51"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_52"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_53"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_54"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_55"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_56"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+            <TextView
+                android:id="@+id/bt_57"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textSize="@dimen/text_large"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:background="@drawable/buttons" />
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>

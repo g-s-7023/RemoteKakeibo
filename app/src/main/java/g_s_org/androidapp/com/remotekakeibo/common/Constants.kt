@@ -72,11 +72,19 @@ class Constants{
         //===
         //=== max number of weeks in a month
         //===
-        const val MAXWEEK_OF_MONTH = 6
+        const val DAYS_OF_WEEK = 7
+        //===
+        //=== max number of weeks in a month
+        //===
+        const val WEEKS_OF_MONTH = 6
         //===
         //=== format of date
         //===
         const val sdf = "yyyy/MM/dd/kk:mm:ss"
+        //===
+        //=== no id
+        //===
+        const val NO_ID = -1
 
     }
 }

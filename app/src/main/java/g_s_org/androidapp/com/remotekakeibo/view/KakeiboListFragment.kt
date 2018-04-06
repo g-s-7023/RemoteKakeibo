@@ -14,17 +14,24 @@ import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.view.dummy.DummyContent
 import g_s_org.androidapp.com.remotekakeibo.view.dummy.DummyContent.DummyItem
 
-/**
- * A fragment representing a list of Items.
- *
- *
- * Activities containing this fragment MUST implement the [OnListFragmentInteractionListener]
- * interface.
- */
-/**
- * Mandatory empty constructor for the fragment manager to instantiate the
- * fragment (e.g. upon screen orientation changes).
- */
+
+
+
+// 現在の年月をonSaveInstanceState()で保持させる
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class KakeiboListFragment : Fragment() {
     // TODO: Customize parameters
     private var mColumnCount = 1

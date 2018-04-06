@@ -9,28 +9,25 @@ import android.widget.Toast
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.DBAccessHelper
 
-
-/**
- * Created by C170044 on 2018/04/05.
- */
 class KakeiboDBAccess {
-    fun kakeiboInsert(a: Activity, cv:ContentValues){
+    // execute function passed
+    fun exec(a:Activity, f:(SQLiteDatabase) -> Unit){
         // create helper
         val helper = DBAccessHelper(a)
         // db
         var db: SQLiteDatabase? = null
         try {
             // open db
-            db = helper.getWritableDatabase()
+            db = helper.writableDatabase
             // begin transaction
             db.beginTransaction()
-            // exec insert
-            db.insert(DBAccessHelper.TABLE_NAME, null, cv)
+            // execution(insert, update, delete)
+            f(db)
             // commit
             db.setTransactionSuccessful()
         } catch (e: Exception) {
             // display toast if error
-            Toast.makeText(a, R.string.msg_dberror, Toast.LENGTH_SHORT).show()
+            Toast.makeText(a, R.string.msg_dbaccesserror, Toast.LENGTH_SHORT).show()
             // out put exception log
             Log.e("ERROR", e.toString())
         } finally {

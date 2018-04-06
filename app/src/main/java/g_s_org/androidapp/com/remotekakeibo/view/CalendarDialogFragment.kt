@@ -1,5 +1,7 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -8,96 +10,109 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 
 import g_s_org.androidapp.com.remotekakeibo.R
+import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.DAYS_OF_WEEK
+import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.WEEKS_OF_MONTH
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [CalendarDialogFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [CalendarDialogFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+fun newCalendarDialogFragment(bundle:Bundle , fragment:Fragment){
+    val instance: CalendarDialogFragment  = CalendarDialogFragment()
+
+}
+
 class CalendarDialogFragment : DialogFragment() {
+    // date when dialog is shown
+    var originalYear = 1900
+    var originalMonth = 1
+    var originalDay = 1
+    // current selected month
+    var currentYear = 1900
+    var currentMonth = 1
 
-    // TODO: Rename and change types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
 
-    private var mListener: OnFragmentInteractionListener? = null
+    override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
+        // activity which call this fragment
+        val caller = activity
+        // view to display in dialog
+        val calendarView = (caller.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
+                .inflate(R.layout.fragment_calendar_dialog, null)
+        // fill value and listener ot calendar
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            mParam1 = arguments.getString(ARG_PARAM1)
-            mParam2 = arguments.getString(ARG_PARAM2)
-        }
-    }
+        // create dialog
+        val dialog = AlertDialog.Builder(caller)
+                .setView(calendarView)
+                .setNegativeButton(R.string.bt_cancel, null)
+                .create()
+        // display no title
+        dialog.requestWindowFeature(DialogFragment.STYLE_NO_FRAME)
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_calendar_dialog, container, false)
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
-        }
+        return dialog
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
+        setTargetFragment()
+    }
+
+    fun initValues(){
+        // get arguments
+        originalYear = arguments.getInt("YEAR_BEFORE")
+        originalMonth = arguments.getInt("YEAR_BEFORE")
+        originalDay = arguments.getInt("YEAR_BEFORE")
+        // set current selected month
+        currentYear = originalYear
+        currentMonth = originalMonth
+    }
+
+    fun setListeners(view:View){
+        // previous month button
+        (view.findViewById(R.id.bt_previous_calendar) as Button).setOnClickListener { onPreviousMonthClicked(view) }
+        // next month button
+        (view.findViewById(R.id.bt_next_calendar) as Button).setOnClickListener { onNextMonthClicked(view) }
+    }
+
+    fun setCalendarView(view:View, year:Int, month:Int){
+        // set button
+
+    }
+
+    //===
+    //=== listener
+    //===
+    fun onPreviousMonthClicked(view:View){
+        if (currentMonth == 1) {
+            // back to December in the previous year
+            currentYear--
+            currentMonth = 12
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
+            // back to the previous month
+            currentMonth--
         }
+        // set the previous month to calendar
+        setCalendarView(view, currentYear, currentMonth)
     }
-
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
-    interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
-    }
-
-    companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment CalendarDialogFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): CalendarDialogFragment {
-            val fragment = CalendarDialogFragment()
-            val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
-            fragment.arguments = args
-            return fragment
+    fun onNextMonthClicked(view:View){
+        // proceed to January in the next year
+        if (currentMonth == 12) {
+            // 現在が12月の場合、年を+1する
+            currentYear++
+            currentMonth = 1
+        } else {
+            // proceed to the next month
+            currentMonth++
         }
+        // set the next month to calendar
+        setCalendarView(view, currentYear, currentMonth)
     }
-}// Required empty public constructor
+    fun onDateClicked(view:View, day:int){
+        // callback
+        (activity as Callback).onDialogDateSelected(currentYear, currentMonth, clickedDay)
+        // ダイアログを閉じる
+        dismiss()
+    }
+
+    interface OnDialogInteractionListener{
+        fun onDialogDateSelected(year:Int, month:Int, day:Int)
+    }
+}

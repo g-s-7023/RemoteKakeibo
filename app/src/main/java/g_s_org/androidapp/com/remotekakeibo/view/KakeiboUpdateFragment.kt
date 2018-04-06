@@ -1,88 +1,128 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 
 import g_s_org.androidapp.com.remotekakeibo.R
+import g_s_org.androidapp.com.remotekakeibo.common.Constants
+import g_s_org.androidapp.com.remotekakeibo.common.DBAccessHelper
+import g_s_org.androidapp.com.remotekakeibo.common.KakeiboDate
+import g_s_org.androidapp.com.remotekakeibo.dbaccess.DetailHistoryAccess
+import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDBAccess
+import g_s_org.androidapp.com.remotekakeibo.model.getPrice
+import g_s_org.androidapp.com.remotekakeibo.model.setPrice
+import org.w3c.dom.Text
+import java.util.*
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [KakeiboUpdateFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- * Use the [KakeiboUpdateFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class KakeiboUpdateFragment : Fragment() {
+class KakeiboUpdateFragment : KakeiboInputFragment() {
+    // ID of selected entry
+    var selectedId: Int = -1
 
-    // TODO: Rename and change types of parameters
-    private var mParam1: String? = null
-    private var mParam2: String? = null
+    //===
+    //=== on view created
+    //===
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        val caller = activity
+        this.initValues(caller)
+        super.setListeners(caller)
+        super.onViewCreated(view, savedInstanceState)
+    }
 
-    private var mListener: OnFragmentInteractionListener? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            mParam1 = arguments.getString(ARG_PARAM1)
-            mParam2 = arguments.getString(ARG_PARAM2)
+    //===
+    //=== initialize value of each view and field
+    //===
+    override fun initValues(a: FragmentActivity) {
+        // get parameters from list item
+        selectedId = arguments.getInt("SELECTED_ID")
+        selectedDate.setDate(
+                arguments.getInt("SELECTED_YEAR"),
+                arguments.getInt("SELECTED_MONTH"),
+                arguments.getInt("SELECTED_DAY"),
+                arguments.getInt("SELECTED_DAYOFWEEK"))
+        priceStack.setPrice(arguments.getInt("SELECTED_PRICE"))
+        val category = arguments.getString("SELECTED_CATEGORY")
+        val type = arguments.getInt("SELECTED_TYPE")
+        val detail = arguments.getString("SELECTED_DETAIL")
+        val termsOfPayment = arguments.getInt("SELECTED_TERMSOFPAYMENT")
+        // set text in category textbox
+        (a.findViewById(R.id.et_category) as EditText).setText(category)
+        // set text in detail textbox
+        (a.findViewById(R.id.et_detail) as EditText).setText(detail)
+        // select category
+        onCategorySelected(a)
+        // select income or expense
+        when (type) {
+            Constants.INCOME -> onIncomeSelected(a.findViewById(R.id.tv_income) as TextView, a)
+            Constants.EXPENSE -> onExpenseSelected(a.findViewById(R.id.tv_expense) as TextView, a)
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_kakeibo_update, container, false)
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        if (mListener != null) {
-            mListener!!.onFragmentInteraction(uri)
+        // select cash or card
+        when (termsOfPayment) {
+            Constants.CASH -> onCashSelected(a.findViewById(R.id.tv_cash) as TextView, a)
+            Constants.CARD -> onCardSelected(a.findViewById(R.id.tv_card) as TextView, a)
         }
+        // price (set 0)
+        (a.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()
+        // date (set today)
+        selectedDate.setDate(Calendar.getInstance())
+        (a.findViewById(R.id.tv_year) as TextView).text = getString(R.string.show_year, selectedDate.year)
+        (a.findViewById(R.id.tv_monthAndDay) as TextView).text = getString(R.string.show_monthday, selectedDate.month, selectedDate.day)
+        (a.findViewById(R.id.tv_dayOfWeek) as TextView).text = getString(R.string.show_dayofweek, Constants.WEEKNAME[selectedDate.dayOfWeek - 1])
+        // set focus on price (not to show keyboard)
+        (a.findViewById(R.id.tv_priceValue) as TextView).requestFocus()
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (context is OnFragmentInteractionListener) {
-            mListener = context
+    //===
+    //=== functions run when each view is selected
+    //===
+    // delete button
+    override fun onLeftButtonClicked(a: FragmentActivity) {
+        // delete from DB
+        KakeiboDBAccess().exec(a) { db: SQLiteDatabase ->
+            db.delete(DBAccessHelper.TABLE_NAME, "_id = ?", arrayOf(selectedId.toString()))
+        }
+        // back to list
+        pageBack(a)
+    }
+
+    // cancel button
+    override fun onRightButtonClicked(a: FragmentActivity) {
+        // back to list
+        pageBack(a)
+    }
+
+    // update button
+    override fun onCenterButtonClicked(a: FragmentActivity) {
+        // contentValues to insert
+        val cv = getContentValues(a)
+        // update DB
+        KakeiboDBAccess().exec(a){db:SQLiteDatabase ->
+            db.update(DBAccessHelper.TABLE_NAME, cv, "_id = ?", arrayOf(selectedId.toString()))
+        }
+        // back to list
+        pageBack(a)
+    }
+
+    //===
+    //=== back to list
+    //===
+    fun pageBack(a: FragmentActivity) {
+        if (a is OnFragmentInteractionListener){
+            a.backPage()
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnFragmentInteractionListener")
+            throw UnsupportedOperationException("Listener is not implemented")
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
-
-    companion object {
-        // TODO: Rename parameter arguments, choose names that match
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-        private val ARG_PARAM1 = "param1"
-        private val ARG_PARAM2 = "param2"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment KakeiboUpdateFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String, param2: String): KakeiboUpdateFragment {
-            val fragment = KakeiboUpdateFragment()
-            val args = Bundle()
-            args.putString(ARG_PARAM1, param1)
-            args.putString(ARG_PARAM2, param2)
-            fragment.arguments = args
-            return fragment
-        }
-    }
-}// Required empty public constructor
+}

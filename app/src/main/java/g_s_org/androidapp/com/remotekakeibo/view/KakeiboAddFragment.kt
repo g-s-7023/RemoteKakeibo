@@ -1,5 +1,7 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
+import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.view.View
@@ -8,6 +10,8 @@ import android.widget.EditText
 import android.widget.TextView
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
+import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.NO_ID
+import g_s_org.androidapp.com.remotekakeibo.common.DBAccessHelper
 import g_s_org.androidapp.com.remotekakeibo.dbaccess.DetailHistoryAccess
 import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDBAccess
 import g_s_org.androidapp.com.remotekakeibo.model.getPrice
@@ -19,9 +23,10 @@ class KakeiboAddFragment : KakeiboInputFragment() {
     //=== on view created
     //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        // activity which call this fragment
         val caller = activity
         this.initValues(caller)
-        this.setListeners(caller)
+        super.setListeners(caller)
         super.onViewCreated(view, savedInstanceState)
     }
     //===
@@ -52,14 +57,6 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         // set center button invisible
         (a.findViewById(R.id.bt_center) as Button).visibility = View.INVISIBLE
     }
-    //===
-    //=== set listeners
-    //===
-    override fun setListeners(a: FragmentActivity) {
-        super.setListeners(a)
-        (a.findViewById(R.id.bt_left) as Button).setOnClickListener { onLeftButtonClicked(a) }
-        (a.findViewById(R.id.bt_right) as Button).setOnClickListener { onRightButtonClicked(a) }
-    }
 
     //===
     //=== functions run when each view is selected
@@ -68,8 +65,10 @@ class KakeiboAddFragment : KakeiboInputFragment() {
     override fun onLeftButtonClicked(a: FragmentActivity) {
         // contentValues to insert
         val cv = getContentValues(a)
-        // insert to db
-        KakeiboDBAccess().kakeiboInsert(a, cv)
+        // insert to DB
+        KakeiboDBAccess().exec(a){db:SQLiteDatabase->
+            db.insert(DBAccessHelper.TABLE_NAME, null, cv)
+        }
         // save detail to preference
         DetailHistoryAccess().savePreference((a.findViewById(R.id.et_detail) as EditText).text.toString(), a)
         // inititalize values(except date)
@@ -89,7 +88,7 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         if (a is OnFragmentInteractionListener){
             a.changePage(toFragment)
         } else {
-            throw UnsupportedOperationException("Listener is not Implemented.")
+            throw UnsupportedOperationException("Listener is not implemented")
         }
     }
 

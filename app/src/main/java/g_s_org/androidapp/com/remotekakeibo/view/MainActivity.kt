@@ -20,10 +20,9 @@ class MainActivity : AppCompatActivity(), KakeiboInputFragment.OnFragmentInterac
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, to).addToBackStack(null).commit()
     }
-    override fun backPage(from: Fragment) {
+    override fun backPage() {
         // remove current fragment and pop backstack
         val manager = supportFragmentManager
-        manager.beginTransaction().remove(from).commit()
         manager.popBackStack()
     }
 }

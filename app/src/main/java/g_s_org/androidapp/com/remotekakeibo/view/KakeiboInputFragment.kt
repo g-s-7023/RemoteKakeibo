@@ -23,11 +23,11 @@ import java.text.SimpleDateFormat
 
 import java.util.*
 
-abstract class KakeiboInputFragment : Fragment() {
+abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialogInteractionListener {
     // buffer of input price
     protected val priceStack: Deque<Char> = ArrayDeque()
     // selected year, month, and day
-    protected val selectedDate: KakeiboDate = KakeiboDate()
+    protected var selectedDate: KakeiboDate = KakeiboDate()
     // current input target(category or detail)
     protected var inputTarget: Int = Constants.CATEGORY
     // current selected terms of payment(cash or card)
@@ -79,6 +79,12 @@ abstract class KakeiboInputFragment : Fragment() {
         }
         // date button
         (a.findViewById(R.id.rl_date) as RelativeLayout).setOnClickListener { onDateSelected(a) }
+        // left button
+        (a.findViewById(R.id.bt_left) as Button).setOnClickListener { onLeftButtonClicked(a) }
+        // right button
+        (a.findViewById(R.id.bt_right) as Button).setOnClickListener { onRightButtonClicked(a) }
+        // center button
+        (a.findViewById(R.id.bt_center) as Button).setOnClickListener { onCenterButtonClicked(a) }
         // ten key
         (a.findViewById(R.id.bt_nine) as Button).setOnClickListener { onTenKeyClicked(a, '9') }
         (a.findViewById(R.id.bt_eight) as Button).setOnClickListener { onTenKeyClicked(a, '8') }
@@ -312,7 +318,7 @@ abstract class KakeiboInputFragment : Fragment() {
     //===
     interface OnFragmentInteractionListener {
         fun changePage(to: Fragment)
-        fun backPage(to: Fragment)
+        fun backPage()
     }
 
 }

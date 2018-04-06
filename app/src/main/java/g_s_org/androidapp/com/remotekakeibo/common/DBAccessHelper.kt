@@ -28,7 +28,7 @@ class DBAccessHelper(ctx: Context) : SQLiteOpenHelper(ctx, DB_NAME, null, DB_VER
         // kakeiboName : mykakeibo or family_kakeibo(not divide table)
         // isSynchronized : has already been synchronized to table on the Web
         val sql = "create table " + TABLE_NAME + " (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "rid INTEGER," +
                 "kakeiboName TEXT not null," +
                 "year INTEGER not null," +
@@ -40,9 +40,7 @@ class DBAccessHelper(ctx: Context) : SQLiteOpenHelper(ctx, DB_NAME, null, DB_VER
                 "price INTEGER not null," +
                 "detail TEXT," +
                 "termsOfPayment INTEGER," +
-                "isDeleted INTEGER," +
-                "isSynchronized INTEGER," +
-                "lastUpdatedDate TEXT)"
+                "isSynchronized INTEGER)"
         db.execSQL(sql)
     }
 

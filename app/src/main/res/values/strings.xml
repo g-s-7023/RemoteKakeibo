@@ -45,7 +45,7 @@
     <string name="bt_back">back</string>
     <string name="bt_clear">C</string>
 
-    <string name="msg_dberror">登録できませんでした</string>
+    <string name="msg_dbaccesserror">DBを更新できませんでした</string>
 
     <!-- sentence -->
     <string name="show_year">%1$d年</string>
