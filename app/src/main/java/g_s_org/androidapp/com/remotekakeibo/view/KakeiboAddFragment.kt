@@ -19,14 +19,14 @@ import java.util.*
 
 
 class KakeiboAddFragment : KakeiboInputFragment() {
+
     //===
     //=== on view created
     //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         // activity which call this fragment
-        val caller = activity
-        this.initValues(caller)
-        super.setListeners(caller)
+        this.initValues(mCaller)
+        super.setListeners(mCaller)
         super.onViewCreated(view, savedInstanceState)
     }
     //===

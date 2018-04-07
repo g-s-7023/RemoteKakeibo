@@ -47,8 +47,9 @@
 
     <string name="msg_dbaccesserror">DBを更新できませんでした</string>
 
-    <!-- sentence -->
+    <!-- title -->
     <string name="show_year">%1$d年</string>
+    <string name="show_yearandmonth">%1$d年%2$d月</string>
     <string name="show_monthday">%1$d/%2$d</string>
     <string name="show_dayofweek">(%1$s)</string>
 

@@ -24,6 +24,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialogInteractionListener {
+    // caller of this activity
+    protected lateinit var mCaller :FragmentActivity
     // buffer of input price
     protected val priceStack: Deque<Char> = ArrayDeque()
     // selected year, month, and day
@@ -35,6 +37,10 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
     // current selected type(income or expense)
     protected var type: Int = Constants.EXPENSE
 
+    override fun onAttach(context: Context?) {
+        if (context is FragmentActivity) mCaller = context
+        super.onAttach(context)
+    }
 
     //===
     //=== on view created
@@ -198,19 +204,8 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
 
     // on date selected, show calendar dialog
     fun onDateSelected(a: FragmentActivity) {
-        // fragment
-        val calFragment = CalendarDialogFragment()
-        // set year, month, day when "date" is tapped
-        val args = Bundle()
-        args.putInt("YEAR_BEFORE", selectedDate.year)
-        args.putInt("MONTH_BEFORE", selectedDate.month)
-        args.putInt("DAY_BEFORE", selectedDate.day)
-        // pass arguments to fragment
-        calFragment.arguments = args
-        // prohibit cancel with "return" button
-        calFragment.isCancelable = false
         // show fragment(dialog)
-        calFragment.show(a.supportFragmentManager, "dialog")
+        CalendarDialogFragment.newInstance(selectedDate.year, selectedDate.month, selectedDate.day).show(childFragmentManager, "dialog")
     }
 
     fun onTenKeyClicked(a: Activity, k: Char) {
