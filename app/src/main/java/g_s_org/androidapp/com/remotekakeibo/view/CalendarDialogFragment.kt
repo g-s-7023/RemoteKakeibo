@@ -1,23 +1,25 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.View
 import android.widget.Button
 
 import g_s_org.androidapp.com.remotekakeibo.R
-import g_s_org.androidapp.com.remotekakeibo.model.KakeiboCalendar
-import g_s_org.androidapp.com.remotekakeibo.model.getCalendarArray
-import g_s_org.androidapp.com.remotekakeibo.model.getCalendarArray_
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
+import java.util.*
 
 
 class CalendarDialogFragment : DialogFragment() {
+    // activity which call this fragment
+    lateinit var mCaller: Activity
     // listener
     lateinit var mListener: OnDialogInteractionListener
     // date when dialog is shown
@@ -28,16 +30,20 @@ class CalendarDialogFragment : DialogFragment() {
     var currentYear = 1900
     var currentMonth = 1
 
+    override fun onAttach(context: Context?) {
+        mCaller = context as Activity
+        super.onAttach(context as Context)
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
-        // activity which call this fragment
-        val caller = activity
-        // view to display in dialog
-        val calendarView = View.inflate(caller, R.layout.fragment_calendar_dialog, null)
-        // fill value and listener of calendar
-
+        // initialize values
+        initValues()
+        // create view to display in dialog
+        val calendarView = View.inflate(mCaller, R.layout.fragment_calendar_dialog, null)
+        // fill value and listener of calendar view
+        setCalendarView(calendarView, currentYear, currentMonth)
         // create dialog
-        val dialog = AlertDialog.Builder(caller)
+        val dialog = AlertDialog.Builder(mCaller)
                 .setView(calendarView)
                 .setNegativeButton(R.string.bt_cancel, null)
                 .create()
@@ -48,65 +54,85 @@ class CalendarDialogFragment : DialogFragment() {
 
     fun initValues() {
         // get arguments
-        originalYear = arguments.getInt("YEAR_BEFORE")
-        originalMonth = arguments.getInt("YEAR_BEFORE")
-        originalDay = arguments.getInt("YEAR_BEFORE")
+        originalYear = arguments.getInt("ORIGINAL_YEAR")
+        originalMonth = arguments.getInt("ORIGINAL_MONTH")
+        originalDay = arguments.getInt("ORIGINAL_DAY")
         // set current selected month
         currentYear = originalYear
         currentMonth = originalMonth
     }
 
-    fun setListeners(view: View) {
-        // previous month button
-        (view.findViewById(R.id.bt_previous_calendar) as Button).setOnClickListener { onPreviousMonthClicked(view) }
-        // next month button
-        (view.findViewById(R.id.bt_next_calendar) as Button).setOnClickListener { onNextMonthClicked(view) }
-    }
-
+    //===
+    //=== set values and listeners in calendar view
+    //===
     fun setCalendarView(view: View, year: Int, month: Int) {
-        // get days
-        val days = getCalendarArray(year, month)
-        // calendar view to display
-        val tl = view.findViewById(R.id.tl_days) as TableLayout
         // set year and month text
         (view.findViewById(R.id.tv_yearAndMonth_calendar) as TextView).text = getString(R.string.show_yearandmonth, year, month)
-        // fill rows with title of the day of week
-
-
+        // set listener to previous month button and next month button
+        (view.findViewById(R.id.bt_previous_calendar) as Button).setOnClickListener { onPreviousMonthClicked(view) }
+        (view.findViewById(R.id.bt_next_calendar) as Button).setOnClickListener { onNextMonthClicked(view) }
+        // calendar table to display
+        val tl = view.findViewById(R.id.tl_days) as TableLayout
+        // get first day of the month
+        val firstDay = Calendar.getInstance()
+        firstDay.set(year, month, 1)
+        // fill the calendar with days
+        setMonth(tl, 0, 1, firstDay.get(Calendar.DAY_OF_WEEK), firstDay.getActualMaximum(Calendar.DAY_OF_MONTH))
     }
-    fun fillCalendarView(t: TableLayout, a: Array<Array<Int>>, row:Int, col:Int) {
-        when (a[row][col]){
-            0 -> setEmpty((t.getChildAt(row) as TableRow).getChildAt(col) as TextView)
-            else -> setDay((t.getChildAt(row) as TableRow).getChildAt(col) as TextView, a[row][col])
-        }
-        return when{
-            row == Constants.WEEKS_OF_MONTH -1 && col == Constants.DAYS_OF_WEEK - 1 -> { }
-            row == Constants.WEEKS_OF_MONTH -1 -> {
-                fillCalendarView(t, a, row + 1, 0)
+
+    // set week to the table(month)
+    private tailrec fun setMonth(tl:TableLayout, weekOfMonth:Int, day:Int, firstDayOfWeek:Int, lastDay:Int){
+        when{
+            weekOfMonth >= tl.childCount ->{
+                return
             }
-            else -> fillCalendarView(t, a, row, col + 1)
+            weekOfMonth == 0 -> {
+                // first week of month
+                setWeek(tl.getChildAt(weekOfMonth) as TableRow, 0, day, firstDayOfWeek - 1, lastDay)
+                return setMonth(tl, weekOfMonth + 1, day + Constants.DAYS_OF_WEEK - firstDayOfWeek + 1, 0, lastDay)
+            }
+            else ->{
+                setWeek(tl.getChildAt(weekOfMonth) as TableRow, 0, day, 0, lastDay)
+                return setMonth(tl, weekOfMonth + 1, day + Constants.DAYS_OF_WEEK, 0, lastDay)
+            }
         }
     }
-    // set empty string and no listener to textView
-    fun setEmpty(t:TextView){
-        t.setOnClickListener(null)
-        t.text = ""
-    }
-    // set day and the corresponding listener to text view
-    fun setDay(t:TextView, d:Int){
-        t.setOnClickListener{onDateClicked(d)}
-        t.text = d.toString()
-    }
-/*
-    fun fillCalendarView(t: TableLayout, a: Array<Int>, r, c, i: Int): Int {
-        when (i) {
-            a.size -> return i
+
+    // set day to the table row(week)
+    private tailrec fun setWeek(tr:TableRow, col:Int, day:Int, firstCol:Int, lastDay:Int){
+        when{
+            col >= tr.childCount ->{
+                return
+            }
+            (col < firstCol || day > lastDay) -> {
+                // fill empty before the first day or after the last day
+                setEmpty(tr.getChildAt(col) as TextView)
+                return setWeek(tr, col + 1, day, firstCol, lastDay)
+            }
             else -> {
-                (t.getChildAt(i/Constants.DAYS_OF_WEEK) as TableRow).getChildAt(i% Constants.DAYS_OF_WEEK)
+                setDay(tr.getChildAt(col) as TextView, day)
+                return setWeek(tr, col + 1, day + 1, firstCol, lastDay)
             }
         }
     }
-*/
+
+    // set day and the corresponding listener to text view (change background if the original day)
+    private fun setDay(t:TextView, d:Int){
+        t.text = d.toString()
+        t.setOnClickListener{onDateClicked(d)}
+        if (currentYear == originalYear && currentMonth == originalMonth && d == originalDay) {
+            t.setBackgroundResource(R.drawable.calendar_today)
+        } else {
+            t.setBackgroundResource(R.drawable.buttons)
+        }
+    }
+
+    // set empty string and no listener to textView
+    private fun setEmpty(t:TextView){
+        t.text = ""
+        t.setOnClickListener(null)
+        t.setBackgroundResource(R.drawable.buttons)
+    }
 
     //===
     //=== listener
@@ -161,9 +187,9 @@ class CalendarDialogFragment : DialogFragment() {
             val fragment = CalendarDialogFragment()
             // set year, month, day when "date" is tapped
             val args = Bundle()
-            args.putInt("YEAR_BEFORE", y)
-            args.putInt("MONTH_BEFORE", m)
-            args.putInt("DAY_BEFORE", d)
+            args.putInt("ORIGINAL_YEAR", y)
+            args.putInt("ORIGINAL_MONTH", m)
+            args.putInt("ORIGINAL_DAY", d)
             // pass arguments to fragment
             fragment.arguments = args
             // prohibit cancel with "return" button

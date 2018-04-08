@@ -1,0 +1,131 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- 右の列 -->
+    <!-- 新規ボタン -->
+    <Button
+        android:id="@+id/bt_new"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/control_height"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/buttons"
+        android:text="@string/bt_new"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_medium"></Button>
+    <!-- ダミー -->
+    <RelativeLayout
+        android:id="@+id/space_dummy"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_above="@id/bt_new"
+        android:layout_alignParentRight="true"></RelativeLayout>
+    <!-- 前月ボタン -->
+    <Button
+        android:id="@+id/bt_previousmonth"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/control_height"
+        android:layout_above="@id/space_dummy"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/buttons"
+        android:text="@string/bt_previousmonth"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_medium"></Button>
+    <!-- 次月ボタン -->
+    <Button
+        android:id="@+id/bt_nextmonth"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/control_height"
+        android:layout_above="@id/bt_previousmonth"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/buttons"
+        android:text="@string/bt_nextmonth"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_medium"></Button>
+    <!-- 横方向の区切り(ダミー) -->
+    <RelativeLayout
+        android:id="@+id/line_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/bt_new"></RelativeLayout>
+    <!-- 年月テキストビュー -->
+    <LinearLayout
+        android:id="@+id/ll_yearAndMonth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/line_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_year_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-5dp"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_month_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="-5dp"
+            android:textSize="40sp" />
+    </LinearLayout>
+    <!-- 左の列 -->
+    <!-- ヘッダ -->
+    <LinearLayout
+        android:id="@+id/ll_total"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/line_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_totalExpense"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/gray"
+            android:text="@string/tv_totalExpense"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_totalExpenseValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_totalIncome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/gray"
+            android:text="@string/tv_totalIncome"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_totalIncomeValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text=""
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/list"
+        android:name="g_s_org.androidapp.com.remotekakeibo.view.KakeiboListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layoutManager="LinearLayoutManager"
+        tools:context="g_s_org.androidapp.com.remotekakeibo.view.KakeiboListFragment"
+        tools:listitem="@layout/fragment_kakeiboitem" />
+</RelativeLayout>

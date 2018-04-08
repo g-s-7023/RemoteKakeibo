@@ -1,29 +1,18 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
-import android.content.ContentValues
-import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.DBAccessHelper
-import g_s_org.androidapp.com.remotekakeibo.common.KakeiboDate
-import g_s_org.androidapp.com.remotekakeibo.dbaccess.DetailHistoryAccess
 import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDBAccess
 import g_s_org.androidapp.com.remotekakeibo.model.getPrice
 import g_s_org.androidapp.com.remotekakeibo.model.setPrice
-import org.w3c.dom.Text
 import java.util.*
 
 class KakeiboUpdateFragment : KakeiboInputFragment() {

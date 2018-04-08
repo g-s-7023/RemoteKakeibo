@@ -1,7 +1,6 @@
-package g_s_org.androidapp.com.remotekakeibo.common
+package g_s_org.androidapp.com.remotekakeibo.model
 
-import java.time.DayOfWeek
-import java.time.Year
+import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import java.util.*
 
 /**

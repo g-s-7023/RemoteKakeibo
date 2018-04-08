@@ -1,5 +1,6 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,80 +14,46 @@ import android.view.ViewGroup
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.view.dummy.DummyContent
 import g_s_org.androidapp.com.remotekakeibo.view.dummy.DummyContent.DummyItem
-
-
+import java.util.*
 
 
 // 現在の年月をonSaveInstanceState()で保持させる
-
-
-
-
-
-
-
-
-
-
+// ページ遷移
 
 
 
 
 class KakeiboListFragment : Fragment() {
-    // TODO: Customize parameters
-    private var mColumnCount = 1
-    private var mListener: OnListFragmentInteractionListener? = null
+    private lateinit var mCaller: Activity
+    private var listedYear:Int = 1900
+    private var listedMonth:Int = 1
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        if (arguments != null) {
-            mColumnCount = arguments.getInt(ARG_COLUMN_COUNT)
-        }
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        mCaller = context as Activity
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_kakeiboitem_list, container, false)
-
-        // Set the adapter
-        if (view is RecyclerView) {
-            val context = view.getContext()
-            val recyclerView = view as RecyclerView
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(LinearLayoutManager(context))
-            } else {
-                recyclerView.setLayoutManager(GridLayoutManager(context, mColumnCount))
-            }
-            recyclerView.setAdapter(MyKakeiboItemRecyclerViewAdapter(DummyContent.ITEMS, mListener))
-        }
-        return view
+        return inflater!!.inflate(R.layout.fragment_kakeibolist, container, false)
     }
 
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?){
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if (context is OnListFragmentInteractionListener) {
-            mListener = context
+    }
+
+    fun initValues(savedInstanceState: Bundle?){
+        if (savedInstanceState != null && savedInstanceState.containsKey("LISTED_YEAR") && savedInstanceState.containsKey("LISTED_MONTH")){
+            listedYear = savedInstanceState.getInt("LISTED_YEAR")
+            listedMonth = savedInstanceState.getInt("LISTED_MONTH")
         } else {
-            throw RuntimeException(context!!.toString() + " must implement OnListFragmentInteractionListener")
+            val cal = Calendar.getInstance()
+            listedYear = cal.get(Calendar.YEAR)
+            listedMonth = cal.get(Calendar.MONTH)
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        mListener = null
-    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments](http://developer.android.com/training/basics/fragments/communicating.html) for more information.
-     */
     interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         fun onListFragmentInteraction(item: DummyItem)

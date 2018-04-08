@@ -3,22 +3,18 @@ package g_s_org.androidapp.com.remotekakeibo.view
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.*
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.MAXDIGITS
 import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.sdf
-import g_s_org.androidapp.com.remotekakeibo.common.KakeiboDate
+import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDate
 import g_s_org.androidapp.com.remotekakeibo.dbaccess.DetailHistoryAccess
 import g_s_org.androidapp.com.remotekakeibo.model.getPrice
 import g_s_org.androidapp.com.remotekakeibo.R
-import junit.runner.BaseTestRunner.getPreference
-import kotlinx.android.synthetic.main.fragment_input.*
 import java.text.SimpleDateFormat
 
 import java.util.*
