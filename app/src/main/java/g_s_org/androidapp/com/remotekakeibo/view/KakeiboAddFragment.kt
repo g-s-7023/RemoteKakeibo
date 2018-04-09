@@ -13,6 +13,7 @@ import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.NO_ID
 import g_s_org.androidapp.com.remotekakeibo.common.DBAccessHelper
 import g_s_org.androidapp.com.remotekakeibo.dbaccess.DetailHistoryAccess
+import g_s_org.androidapp.com.remotekakeibo.model.FragmentToActivityInterection
 import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDBAccess
 import g_s_org.androidapp.com.remotekakeibo.model.getPrice
 import java.util.*
@@ -25,8 +26,8 @@ class KakeiboAddFragment : KakeiboInputFragment() {
     //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         // activity which call this fragment
-        this.initValues(mCaller)
-        super.setListeners(mCaller)
+        initValues(mCaller)
+        setListeners(mCaller)
         super.onViewCreated(view, savedInstanceState)
     }
     //===
@@ -85,7 +86,7 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         args.putInt("SELECTED_MONTH", selectedDate.month)
         toFragment.arguments = args
         // change page
-        if (a is OnFragmentInteractionListener){
+        if (a is FragmentToActivityInterection){
             a.changePage(toFragment)
         } else {
             throw UnsupportedOperationException("Listener is not implemented")

@@ -26,8 +26,10 @@
     <string name="bt_delete">削除</string>
     <string name="bt_return">戻る</string>
     <string name="bt_list">一覧</string>
-    <string name="bt_cancel">キャンセル</string>
     <string name="bt_new">新規</string>
+    <string name="bt_ok">OK</string>
+    <string name="bt_cancel">Cancel</string>
+
     <string name="bt_nextmonth">↑翌月</string>
     <string name="bt_previousmonth">↓先月</string>
     <string name="bt_nextmonth_calendar">翌月→</string>
@@ -47,11 +49,14 @@
 
     <string name="msg_dbaccesserror">DBを更新できませんでした</string>
 
-    <!-- title -->
+    <!-- label -->
     <string name="show_year">%1$d年</string>
     <string name="show_yearandmonth">%1$d年%2$d月</string>
     <string name="show_monthday">%1$d/%2$d</string>
     <string name="show_dayofweek">(%1$s)</string>
+
+    <!-- title -->
+    <string name="title_yearandmonth">年月選択</string>
 
     <!-- list of category -->
     <string-array name="lv_category_and_detail">

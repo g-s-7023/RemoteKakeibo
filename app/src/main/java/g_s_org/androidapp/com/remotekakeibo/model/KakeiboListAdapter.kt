@@ -1,10 +1,12 @@
-package g_s_org.androidapp.com.remotekakeibo.view
+package g_s_org.androidapp.com.remotekakeibo.model
 
+import android.app.Activity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import g_s_org.androidapp.com.remotekakeibo.R
 
 import g_s_org.androidapp.com.remotekakeibo.view.KakeiboListFragment.OnListFragmentInteractionListener
 import g_s_org.androidapp.com.remotekakeibo.view.dummy.DummyContent.DummyItem
@@ -14,7 +16,7 @@ import g_s_org.androidapp.com.remotekakeibo.view.dummy.DummyContent.DummyItem
  * specified [OnListFragmentInteractionListener].
  * TODO: Replace the implementation with code for your data type.
  */
-class MyKakeiboItemRecyclerViewAdapter(private val mValues: List<DummyItem>, private val mListener: OnListFragmentInteractionListener?) : RecyclerView.Adapter<MyKakeiboItemRecyclerViewAdapter.ViewHolder>() {
+class KakeiboListAdapter(private val mValues: List<DummyItem>, private val mListener: OnKakeiboListItemClickListener?) : RecyclerView.Adapter<KakeiboListAdapter.ViewHolder>() {
 
     val itemCount: Int
         get() = mValues.size
@@ -26,27 +28,30 @@ class MyKakeiboItemRecyclerViewAdapter(private val mValues: List<DummyItem>, pri
     }
 
     fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.mItem = mValues[position]
+        holder.mListItem = mValues[position]
         holder.mIdView.text = mValues[position].id
         holder.mContentView.text = mValues[position].content
 
         holder.mView.setOnClickListener {
-            mListener?.onListFragmentInteraction(holder.mItem)
+            mListener?.onItemClicked(holder.mListItem)
         }
     }
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
         val mIdView: TextView
         val mContentView: TextView
-        var mItem: DummyItem? = null
+        var mListItem: KakeiboListItem? = null
 
         init {
             mIdView = mView.findViewById(R.id.id) as TextView
             mContentView = mView.findViewById(R.id.content) as TextView
         }
 
-        fun toString(): String {
-            return super.toString() + " '" + mContentView.text + "'"
-        }
+
     }
+
+    interface OnKakeiboListItemClickListener{
+        fun onItemClicked(a:Activity, item:KakeiboListItem)
+    }
+
 }

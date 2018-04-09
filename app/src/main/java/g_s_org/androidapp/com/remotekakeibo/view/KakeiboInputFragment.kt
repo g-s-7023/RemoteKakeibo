@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat
 
 import java.util.*
 
-abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialogInteractionListener {
+abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDialogInteractionListener {
     // caller of this activity
     protected lateinit var mCaller :FragmentActivity
     // buffer of input price
@@ -201,7 +201,8 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
     // on date selected, show calendar dialog
     fun onDateSelected(a: FragmentActivity) {
         // show fragment(dialog)
-        CalendarDialogFragment.newInstance(selectedDate.year, selectedDate.month, selectedDate.day).show(childFragmentManager, "dialog")
+        CalendarDialogFragment.newInstance(selectedDate.year, selectedDate.month, selectedDate.day)
+                .show(childFragmentManager, "dialog")
     }
 
     fun onTenKeyClicked(a: Activity, k: Char) {
@@ -307,11 +308,12 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
     //===
     //=== listener to interact with activity
     //===
+    /*
     interface OnFragmentInteractionListener {
         fun changePage(to: Fragment)
         fun backPage()
     }
-
+    */
 }
 
 

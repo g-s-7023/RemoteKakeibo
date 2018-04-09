@@ -85,6 +85,10 @@ class Constants{
         //=== no id
         //===
         const val NO_ID = -1
+        //===
+        //=== default year
+        //===
+        const val DEFAULT_YEAR = 2000
 
     }
 }

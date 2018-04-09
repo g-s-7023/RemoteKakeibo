@@ -10,6 +10,7 @@ import android.widget.TextView
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.DBAccessHelper
+import g_s_org.androidapp.com.remotekakeibo.model.FragmentToActivityInterection
 import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDBAccess
 import g_s_org.androidapp.com.remotekakeibo.model.getPrice
 import g_s_org.androidapp.com.remotekakeibo.model.setPrice
@@ -106,10 +107,31 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     //=== back to list
     //===
     fun pageBack(a: FragmentActivity) {
-        if (a is OnFragmentInteractionListener){
+        if (a is FragmentToActivityInterection){
             a.backPage()
         } else {
             throw UnsupportedOperationException("Listener is not implemented")
+        }
+    }
+
+    companion object {
+        fun newInstance(id:Int, y:Int, m:Int, day:Int, dOfW:Int, c:String, t:Int, p:Int, det:String, tOfP:Int):KakeiboUpdateFragment{
+            // set fragment
+            val fragment = KakeiboUpdateFragment()
+            // set arguments
+            val args = Bundle()
+            args.putInt("SELECTED_ID", id)
+            args.putInt("SELECTED_YEAR", y)
+            args.putInt("SELECTED_MONTH", m)
+            args.putInt("SELECTED_DAY", day)
+            args.putInt("SELECTED_DAYOFWEEK", dOfW)
+            args.putString("SELECTED_CATEGORY", c)
+            args.putInt("SELECTED_TYPE", t)
+            args.putInt("SELECTED_PRICE", p)
+            args.putString("SELECTED_DETAIL", det)
+            args.putInt("SELECTED_TERMSOFPAYMENT", tOfP)
+            fragment.arguments = args
+            return fragment
         }
     }
 
