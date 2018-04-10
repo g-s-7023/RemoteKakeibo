@@ -1,6 +1,5 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
-import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
@@ -10,7 +9,6 @@ import android.widget.EditText
 import android.widget.TextView
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
-import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.NO_ID
 import g_s_org.androidapp.com.remotekakeibo.common.DBAccessHelper
 import g_s_org.androidapp.com.remotekakeibo.dbaccess.DetailHistoryAccess
 import g_s_org.androidapp.com.remotekakeibo.model.FragmentToActivityInterection
@@ -26,14 +24,14 @@ class KakeiboAddFragment : KakeiboInputFragment() {
     //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         // activity which call this fragment
-        initValues(mCaller)
+        setViews(mCaller)
         setListeners(mCaller)
         super.onViewCreated(view, savedInstanceState)
     }
     //===
     //=== initialize value of each view and field
     //===
-    override fun initValues(a: FragmentActivity) {
+    override fun setViews(a: FragmentActivity) {
         // clear text in category textbox
         (a.findViewById(R.id.et_category) as EditText).setText("")
         // clear text in detail textbox
@@ -67,13 +65,13 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         // contentValues to insert
         val cv = getContentValues(a)
         // insert to DB
-        KakeiboDBAccess().exec(a){db:SQLiteDatabase->
+        KakeiboDBAccess().execWrite(a){ db:SQLiteDatabase->
             db.insert(DBAccessHelper.TABLE_NAME, null, cv)
         }
         // save detail to preference
         DetailHistoryAccess().savePreference((a.findViewById(R.id.et_detail) as EditText).text.toString(), a)
         // inititalize values(except date)
-        initValues(a)
+        setViews(a)
     }
 
     // list button

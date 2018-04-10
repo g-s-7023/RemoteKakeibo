@@ -24,7 +24,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     //=== on view created
     //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        this.initValues(mCaller)
+        this.setViews(mCaller)
         super.setListeners(mCaller)
         super.onViewCreated(view, savedInstanceState)
     }
@@ -32,7 +32,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     //===
     //=== initialize value of each view and field
     //===
-    override fun initValues(a: FragmentActivity) {
+    override fun setViews(a: FragmentActivity) {
         // get parameters from list item
         selectedId = arguments.getInt("SELECTED_ID")
         selectedDate.setDate(
@@ -78,7 +78,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     // delete button
     override fun onLeftButtonClicked(a: FragmentActivity) {
         // delete from DB
-        KakeiboDBAccess().exec(a) { db: SQLiteDatabase ->
+        KakeiboDBAccess().execWrite(a) { db: SQLiteDatabase ->
             db.delete(DBAccessHelper.TABLE_NAME, "_id = ?", arrayOf(selectedId.toString()))
         }
         // back to list
@@ -96,7 +96,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
         // contentValues to insert
         val cv = getContentValues(a)
         // update DB
-        KakeiboDBAccess().exec(a){db:SQLiteDatabase ->
+        KakeiboDBAccess().execWrite(a){ db:SQLiteDatabase ->
             db.update(DBAccessHelper.TABLE_NAME, cv, "_id = ?", arrayOf(selectedId.toString()))
         }
         // back to list

@@ -31,7 +31,7 @@ class KakeiboDate(var year:Int = 1900, var month:Int = 1, var day:Int = 1, var d
         dayOfWeek = w
     }
     // compare date
-    fun compareDate(date: KakeiboDate): Boolean {
+    fun isSameDate(date: KakeiboDate): Boolean {
         return (date.year == year && date.month == this.month && date.day == this.day)
     }
     // clone

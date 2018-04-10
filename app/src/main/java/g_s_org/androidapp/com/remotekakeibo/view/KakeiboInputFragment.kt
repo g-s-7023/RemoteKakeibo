@@ -234,7 +234,7 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     abstract fun onLeftButtonClicked(a: FragmentActivity)
     abstract fun onRightButtonClicked(a: FragmentActivity)
     abstract fun onCenterButtonClicked(a: FragmentActivity)
-    abstract fun initValues(a: FragmentActivity)
+    abstract fun setViews(a: FragmentActivity)
 
     //===
     //=== validation
