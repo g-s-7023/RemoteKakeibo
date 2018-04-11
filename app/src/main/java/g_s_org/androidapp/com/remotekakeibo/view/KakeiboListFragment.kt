@@ -23,7 +23,6 @@ import java.util.*
 // ページ遷移
 
 
-
 class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallback, KakeiboListAdapter.OnKakeiboListItemClickListener {
     private lateinit var mCaller: FragmentActivity
     private var yearToList: Int = Constants.DEFAULT_YEAR
@@ -47,7 +46,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         // initialize values and views
         initValues()
         // set listeners of buttons
-        setListeners(mCaller)
+        setListeners()
         // show KakeiboList
         setViews()
     }
@@ -63,7 +62,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         }
     }
 
-    fun setListeners(a: FragmentActivity) {
+    fun setListeners() {
         // year and month
         (mCaller.findViewById(R.id.ll_yearAndMonth) as LinearLayout).setOnClickListener { onYearOrMonthClicked(yearToList, monthToList) }
         // previous month
@@ -74,11 +73,10 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         (mCaller.findViewById(R.id.bt_new) as Button).setOnClickListener { onNewEntryClicked(mCaller) }
     }
 
-    fun setViews(){
+    fun setViews() {
         // list
         setKakeiboListView(yearToList, monthToList)
     }
-
 
     //===
     //=== listeners
@@ -91,7 +89,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
 
     // previous month button
     fun onPreviousMonthClicked() {
-        when (monthToList){
+        when (monthToList) {
             1 -> {
                 yearToList--
                 monthToList = 12
@@ -104,8 +102,8 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
 
     // next month button
-    fun onNextMonthClicked(){
-        when (monthToList){
+    fun onNextMonthClicked() {
+        when (monthToList) {
             12 -> {
                 yearToList++
                 monthToList = 1
@@ -118,29 +116,29 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
 
     // new entry button
-    fun onNewEntryClicked(a:Activity){
-        if (a is FragmentToActivityInterection){
+    fun onNewEntryClicked(a: Activity) {
+        if (a is FragmentToActivityInterection) {
             a.backPage()
+        } else {
+            throw UnsupportedOperationException("Listener is not implemented")
         }
     }
 
     // row
-    override fun onItemClicked(a: Activity, item: KakeiboListItem) {
-        if (!item.isSummary) {
-            // set fragment
-            val fragment = KakeiboUpdateFragment.newInstance(item.id, item.date.year, item.date.month,
-                    item.date.day, item.date.dayOfWeek, item.category, item.type, item.price, item.detail, item.termsOfPayment)
-            // move to UpdateFragment
-            if (a is FragmentToActivityInterection) {
-                a.changePage(fragment)
-            } else {
-                throw UnsupportedOperationException("Listener is not implemented")
-            }
+    override fun onItemClicked(item: KakeiboListItem) {
+        // set fragment
+        val fragment = KakeiboUpdateFragment.newInstance(item.id, item.date.year, item.date.month,
+                item.date.day, item.date.dayOfWeek, item.category, item.type, item.price, item.detail, item.termsOfPayment)
+        // move to UpdateFragment
+        if (mCaller is FragmentToActivityInterection) {
+            (mCaller as FragmentToActivityInterection).changePage(fragment)
+        } else {
+            throw UnsupportedOperationException("Listener is not implemented")
         }
     }
 
     //===
-    //=== set views
+    //=== view setters
     //===
     fun setKakeiboListView(y: Int, m: Int) {
         // read DB
@@ -163,6 +161,34 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         }
     }
 
+    //===
+    //=== callback from calendar dialog
+    //===
+    override fun onDialogYearMonthSelected(y: Int, m: Int) {
+        setKakeiboListView(y, m)
+    }
+
+    //===
+    //=== factory method
+    //===
+    companion object {
+        fun newInstance(y: Int, m: Int): KakeiboListFragment {
+            // fragment
+            val fragment = KakeiboListFragment()
+            // set year and month when "date" is tapped
+            val args = Bundle()
+            args.putInt("YEAR_TOLIST", y)
+            args.putInt("MONTH_TOLIST", m)
+            // pass arguments to fragment
+            fragment.arguments = args
+            // return fragment
+            return fragment
+        }
+    }
+
+    //===
+    //=== business logic
+    //===
     private tailrec fun getKakeiboList(c: Cursor, l: MutableList<KakeiboListItem>, previousDate: KakeiboDate, si: Int, se: Int, ti: Int, te: Int,
                                        isContinue: Boolean, isFirst: Boolean): Triple<MutableList<KakeiboListItem>, Int, Int> {
         c.use {
@@ -205,25 +231,5 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         }
     }
 
-    //===
-    //=== callback from calendar dialog
-    //===
-    override fun onDialogYearMonthSelected(y: Int, m: Int) {
-        setKakeiboListView(y, m)
-    }
 
-    companion object {
-        fun newInstance(y: Int, m: Int): KakeiboListFragment {
-            // fragment
-            val fragment = KakeiboListFragment()
-            // set year and month when "date" is tapped
-            val args = Bundle()
-            args.putInt("YEAR_TOLIST", y)
-            args.putInt("MONTH_TOLIST", m)
-            // pass arguments to fragment
-            fragment.arguments = args
-            // return fragment
-            return fragment
-        }
-    }
 }

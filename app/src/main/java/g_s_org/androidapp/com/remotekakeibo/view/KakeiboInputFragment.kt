@@ -21,7 +21,7 @@ import java.util.*
 
 abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDialogInteractionListener {
     // caller of this activity
-    protected lateinit var mCaller :FragmentActivity
+    protected lateinit var mCaller: FragmentActivity
     // buffer of input price
     protected val priceStack: Deque<Char> = ArrayDeque()
     // selected year, month, and day
@@ -38,49 +38,37 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         super.onAttach(context)
     }
 
-    //===
-    //=== on view created
-    //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
-
+    //===
+    //=== initialize values
+    //===
+    abstract fun initValues()
+    //===
+    //=== set values to each view
+    //===
+    abstract fun setViews(a: FragmentActivity)
     //===
     //=== set listener of each view
     //===
     open fun setListeners(a: FragmentActivity) {
         // list
-        (a.findViewById(R.id.lv_categoryAndDetail) as ListView).setOnItemClickListener { parent, _, position, _ ->
-            onListSelected(a, parent, position)
-        }
+        (a.findViewById(R.id.lv_categoryAndDetail) as ListView).setOnItemClickListener { parent, _, position, _ -> onListSelected(a, parent, position) }
         // category textbox
-        (a.findViewById(R.id.et_category) as EditText).setOnFocusChangeListener { view, hasFocus ->
-            // focus on category if current focus is on other than category
-            if (inputTarget != Constants.CATEGORY && hasFocus == true) onCategorySelected(a)
-        }
+        (a.findViewById(R.id.et_category) as EditText).setOnFocusChangeListener { _, hasFocus -> onCategoryFocused(hasFocus) }
         // detail textbox
-        (a.findViewById(R.id.et_detail) as EditText).setOnFocusChangeListener { view, hasFocus ->
-            // focus on detail if current focus is on other than detail
-            if (inputTarget != Constants.DETAIL && hasFocus == true) onDetailSelected(a)
-        }
+        (a.findViewById(R.id.et_detail) as EditText).setOnFocusChangeListener { _, hasFocus -> onDetailFocused(hasFocus) }
         // card button
-        (a.findViewById(R.id.tv_card) as TextView).setOnClickListener {
-            if (termsOfPayment == Constants.CASH) onCardSelected(it, a)
-        }
+        (a.findViewById(R.id.tv_card) as TextView).setOnClickListener { onCardSelected() }
         // cash button
-        (a.findViewById(R.id.tv_cash) as TextView).setOnClickListener {
-            if (termsOfPayment == Constants.CARD) onCashSelected(it, a)
-        }
+        (a.findViewById(R.id.tv_cash) as TextView).setOnClickListener { onCashSelected() }
         // income button
-        (a.findViewById(R.id.tv_income) as TextView).setOnClickListener {
-            if (type == Constants.EXPENSE) onIncomeSelected(it, a)
-        }
+        (a.findViewById(R.id.tv_income) as TextView).setOnClickListener { onIncomeSelected() }
         // expense button
-        (a.findViewById(R.id.tv_expense) as TextView).setOnClickListener {
-            if (type == Constants.INCOME) onExpenseSelected(it, a)
-        }
+        (a.findViewById(R.id.tv_expense) as TextView).setOnClickListener { onExpenseSelected() }
         // date button
-        (a.findViewById(R.id.rl_date) as RelativeLayout).setOnClickListener { onDateSelected(a) }
+        (a.findViewById(R.id.rl_date) as RelativeLayout).setOnClickListener { onDateSelected() }
         // left button
         (a.findViewById(R.id.bt_left) as Button).setOnClickListener { onLeftButtonClicked(a) }
         // right button
@@ -103,103 +91,72 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         // clear key
         (a.findViewById(R.id.bt_clear) as Button).setOnClickListener { onClearKeyClicked(a) }
     }
-
     //===
     //=== functions run when each view is selected
     //===
     // on select an item of list
     fun onListSelected(a: Activity, parent: AdapterView<*>, pos: Int) {
-        // get selected string
-        val inputString = (parent as ListView).getItemAtPosition(pos) as String
-        // detail textbox
-        val detailEditText: EditText = a.findViewById(R.id.et_detail) as EditText
         // act depends on current input target
         when (inputTarget) {
             Constants.CATEGORY -> {
-                // update category textbox
-                (a.findViewById(R.id.et_category) as EditText).setText(inputString)
-                // move focus on detail textbox
-                detailEditText.requestFocus()
+                setCategoryFromList((parent as ListView).getItemAtPosition(pos) as String)
+                // onDetailFocused is called, succeeded by requestFocus() in setCategoryFromList()
             }
             Constants.DETAIL -> {
-                // update detail textbox(stay focus)
-                detailEditText.setText(inputString)
+                setDetailFromList((parent as ListView).getItemAtPosition(pos) as String)
             }
         }
-        // get string in detail textbox
-        val detailString = detailEditText.text.toString()
-        // move cursor to the end of string
-        detailEditText.setSelection(detailString.length)
     }
 
-    // on select category
-    fun onCategorySelected(a: Activity) {
-        // change input target
-        inputTarget = Constants.CATEGORY
-        // set back ground of category textbox "selected"
-        (a.findViewById(R.id.et_category) as EditText).setBackgroundResource(R.drawable.categoryanddetail_selected)
-        // set back ground of detail textbox "unselected"
-        (a.findViewById(R.id.et_detail) as EditText).setBackgroundResource(R.drawable.categoryanddetail_noselected)
-        // get category list
-        val valList = resources.getStringArray(R.array.lv_category_and_detail)
-        // create adapter and show list
-        val adapter = ArrayAdapter<String>(a, android.R.layout.simple_list_item_1, valList)
-        (a.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter = adapter
+    fun onCategoryFocused(hasFocus: Boolean) {
+        if (inputTarget != Constants.CATEGORY && hasFocus) {
+            // change input target
+            inputTarget = Constants.CATEGORY
+            setCategoryView()
+        }
     }
 
-    // on select detail
-    fun onDetailSelected(a: Activity) {
-        // change input target
-        inputTarget = Constants.DETAIL
-        // set back ground of category textbox "selected"
-        (a.findViewById(R.id.et_category) as EditText).setBackgroundResource(R.drawable.categoryanddetail_noselected)
-        // set back ground of detail textbox "unselected"
-        (a.findViewById(R.id.et_detail) as EditText).setBackgroundResource(R.drawable.categoryanddetail_selected)
-        // get detail list
-        val valList = DetailHistoryAccess().getPreference(a)
-        // create adapter and show list
-        val adapter = ArrayAdapter<String>(a, android.R.layout.simple_list_item_1, valList)
-        (a.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter = adapter
+    fun onDetailFocused(hasFocus: Boolean) {
+        if (inputTarget != Constants.DETAIL && hasFocus) {
+            // change input target
+            inputTarget = Constants.DETAIL
+            setDetailView()
+        }
     }
 
-    fun onCardSelected(v: View, a: Activity) {
-        // select "card" if card is not selected
-        termsOfPayment = Constants.CARD
-        // change background color of card textview to "selected"
-        v.setBackgroundResource(R.drawable.termsandtype_selected)
-        // change background color of cash textview to "unselected"
-        (a.findViewById(R.id.tv_cash) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+    fun onCardSelected() {
+        if (termsOfPayment == Constants.CASH) {
+            // select "card" if card is not selected
+            termsOfPayment = Constants.CARD
+            setCardView()
+        }
     }
 
-    fun onCashSelected(v: View, a: Activity) {
-        // select "cash" if cash is not selected
-        termsOfPayment = Constants.CASH
-        // change background color of cash textview to "selected"
-        v.setBackgroundResource(R.drawable.termsandtype_selected)
-        // change background color of card textview to "unselected"
-        (a.findViewById(R.id.tv_card) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+    fun onCashSelected() {
+        if (termsOfPayment == Constants.CARD) {
+            // select "cash" if cash is not selected
+            termsOfPayment = Constants.CASH
+            setCashView()
+        }
     }
 
-    fun onIncomeSelected(v: View, a: Activity) {
+    fun onIncomeSelected() {
         // select "income" if cash is not selected
-        type = Constants.INCOME
-        // change background color of income textview to "selected"
-        v.setBackgroundResource(R.drawable.termsandtype_selected)
-        // change background color of expense textview to "unselected"
-        (a.findViewById(R.id.tv_expense) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+        if (type == Constants.EXPENSE) {
+            type = Constants.INCOME
+            setIncomeView()
+        }
     }
 
-    fun onExpenseSelected(v: View, a: Activity) {
-        // select "expense" if cash is not selected
-        type = Constants.EXPENSE
-        // change background color of expense textview to "selected"
-        v.setBackgroundResource(R.drawable.termsandtype_selected)
-        // change background color of income textview to "unselected"
-        (a.findViewById(R.id.tv_income) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+    fun onExpenseSelected() {
+        // select "expense" if expense is not selected
+        if (type == Constants.INCOME) {
+            type = Constants.EXPENSE
+            setExpenseView()
+        }
     }
 
-    // on date selected, show calendar dialog
-    fun onDateSelected(a: FragmentActivity) {
+    fun onDateSelected() {
         // show fragment(dialog)
         CalendarDialogFragment.newInstance(selectedDate.year, selectedDate.month, selectedDate.day)
                 .show(childFragmentManager, "dialog")
@@ -212,7 +169,7 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
                 priceStack.removeLast()
             }
             priceStack.addLast(k)
-            (a.findViewById(R.id.tv_priceValue) as TextView).setText(priceStack.getPrice())
+            setPriceView(priceStack.getPrice())
         }
     }
 
@@ -222,19 +179,95 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
             // if priceStack becomes empty, add 0
             priceStack.addLast('0')
         }
-        (a.findViewById(R.id.tv_priceValue) as TextView).setText(priceStack.getPrice())
+        setPriceView(priceStack.getPrice())
     }
 
     fun onClearKeyClicked(a: Activity) {
         priceStack.clear()
         priceStack.addLast('0')
-        (a.findViewById(R.id.tv_priceValue) as TextView).setText(priceStack.getPrice())
+        setPriceView(priceStack.getPrice())
     }
 
     abstract fun onLeftButtonClicked(a: FragmentActivity)
     abstract fun onRightButtonClicked(a: FragmentActivity)
     abstract fun onCenterButtonClicked(a: FragmentActivity)
-    abstract fun setViews(a: FragmentActivity)
+
+    //===
+    //=== view setters
+    //===
+    fun setPriceView(p: String) {
+        (mCaller.findViewById(R.id.tv_priceValue) as TextView).text = p
+    }
+
+    fun setCategoryFromList(c:String){
+        // update category textbox
+        (mCaller.findViewById(R.id.et_category) as EditText).setText(c)
+        val detailEditText = (mCaller.findViewById(R.id.et_category) as EditText)
+        // move focus on detail textbox
+        detailEditText.requestFocus()
+        // move cursor to the end of string
+        detailEditText.setSelection(detailEditText.text.toString().length)
+    }
+
+    fun setDetailFromList(d:String){
+        val detailEditText = (mCaller.findViewById(R.id.et_category) as EditText)
+        // update detail textbox(stay focus)
+        detailEditText.setText(d)
+        // move cursor to the end of string
+        detailEditText.setSelection(detailEditText.text.toString().length)
+    }
+
+    fun setCategoryView() {
+        // set back ground of category textbox "selected"
+        (mCaller.findViewById(R.id.et_category) as EditText).setBackgroundResource(R.drawable.categoryanddetail_selected)
+        // set back ground of detail textbox "unselected"
+        (mCaller.findViewById(R.id.et_detail) as EditText).setBackgroundResource(R.drawable.categoryanddetail_noselected)
+        // get category list
+        val valList = resources.getStringArray(R.array.lv_category_and_detail)
+        // set adapter to ListView
+        (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter =
+                ArrayAdapter<String>(mCaller, android.R.layout.simple_list_item_1, valList)
+    }
+
+    fun setDetailView() {
+        // set back ground of category textbox "selected"
+        (mCaller.findViewById(R.id.et_category) as EditText).setBackgroundResource(R.drawable.categoryanddetail_noselected)
+        // set back ground of detail textbox "unselected"
+        (mCaller.findViewById(R.id.et_detail) as EditText).setBackgroundResource(R.drawable.categoryanddetail_selected)
+        // get detail list
+        val valList = DetailHistoryAccess().getPreference(mCaller)
+        // set list to ListView
+        (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter =
+                ArrayAdapter<String>(mCaller, android.R.layout.simple_list_item_1, valList)
+    }
+
+    fun setCardView() {
+        // change background color of cash textview to "selected"
+        (mCaller.findViewById(R.id.tv_card) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
+        // change background color of card textview to "unselected"
+        (mCaller.findViewById(R.id.tv_cash) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+    }
+
+    fun setCashView() {
+        // change background color of cash textview to "selected"
+        (mCaller.findViewById(R.id.tv_cash) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
+        // change background color of card textview to "unselected"
+        (mCaller.findViewById(R.id.tv_card) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+    }
+
+    fun setIncomeView() {
+        // change background color of income textview to "selected"
+        (mCaller.findViewById(R.id.tv_income) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
+        // change background color of expense textview to "unselected"
+        (mCaller.findViewById(R.id.tv_expense) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+    }
+
+    fun setExpenseView() {
+        // change background color of expense textview to "selected"
+        (mCaller.findViewById(R.id.tv_expense) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
+        // change background color of income textview to "unselected"
+        (mCaller.findViewById(R.id.tv_income) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+    }
 
     //===
     //=== validation
@@ -249,12 +282,6 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     //===
     //=== set contentsValue to store
     //===
-
-
-    // 4/3修正
-    // 入力値チェックは別出しにする
-
-
     fun getContentValues(a: Activity): ContentValues {
         // contentValues to return
         val cv = ContentValues()
@@ -304,16 +331,6 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         (a.findViewById(R.id.tv_monthAndDay) as TextView).text = getString(R.string.show_monthday, m, d)
         (a.findViewById(R.id.tv_dayOfWeek) as TextView).text = getString(R.string.show_dayofweek, Constants.WEEKNAME[selectedDate.dayOfWeek - 1])
     }
-
-    //===
-    //=== listener to interact with activity
-    //===
-    /*
-    interface OnFragmentInteractionListener {
-        fun changePage(to: Fragment)
-        fun backPage()
-    }
-    */
 }
 
 

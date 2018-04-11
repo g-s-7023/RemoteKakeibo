@@ -29,6 +29,22 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         super.onViewCreated(view, savedInstanceState)
     }
     //===
+    //=== initialize values
+    //===
+    override fun initValues() {
+        // price (set 0)
+        priceStack.clear()
+        priceStack.addLast('0')
+        // date (set today)
+        selectedDate.setDate(Calendar.getInstance())
+        // select category
+        inputTarget = Constants.CATEGORY
+        // select "cash"
+        termsOfPayment = Constants.CASH
+        // select "expense"
+        type = Constants.EXPENSE
+    }
+    //===
     //=== initialize value of each view and field
     //===
     override fun setViews(a: FragmentActivity) {
@@ -37,17 +53,14 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         // clear text in detail textbox
         (a.findViewById(R.id.et_detail) as EditText).setText("")
         // select category
-        onCategorySelected(a)
-        // select "expense"
-        onExpenseSelected(a.findViewById(R.id.tv_expense), a)
-        // select "cash"
-        onCashSelected(a.findViewById(R.id.tv_cash), a)
-        // price (set 0)
-        priceStack.clear()
-        priceStack.addLast('0')
+        setCategoryView()
+        // select expense
+        setExpenseView()
+        // select cash
+        setCashView()
+        // set price
         (a.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()
-        // date (set today)
-        selectedDate.setDate(Calendar.getInstance())
+        // date
         (a.findViewById(R.id.tv_year) as TextView).text = getString(R.string.show_year, selectedDate.year)
         (a.findViewById(R.id.tv_monthAndDay) as TextView).text = getString(R.string.show_monthday, selectedDate.month, selectedDate.day)
         (a.findViewById(R.id.tv_dayOfWeek) as TextView).text =  getString(R.string.show_dayofweek, Constants.WEEKNAME[selectedDate.dayOfWeek - 1])
@@ -77,12 +90,7 @@ class KakeiboAddFragment : KakeiboInputFragment() {
     // list button
     override fun onRightButtonClicked(a: FragmentActivity) {
         // fragment to replace for
-        val toFragment = KakeiboListFragment()
-        // set argument(date)
-        val args = Bundle()
-        args.putInt("SELECTED_YEAR", selectedDate.year)
-        args.putInt("SELECTED_MONTH", selectedDate.month)
-        toFragment.arguments = args
+        val toFragment = KakeiboListFragment.newInstance(selectedDate.year, selectedDate.month)
         // change page
         if (a is FragmentToActivityInterection){
             a.changePage(toFragment)

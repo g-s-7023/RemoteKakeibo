@@ -24,47 +24,50 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     //=== on view created
     //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        this.initValues()
         this.setViews(mCaller)
         super.setListeners(mCaller)
         super.onViewCreated(view, savedInstanceState)
+    }
+    //===
+    //=== initialize values
+    //===
+    override fun initValues() {
+        priceStack.setPrice(arguments.getInt("SELECTED_PRICE"))
+        selectedDate.setDate(
+                arguments.getInt("SELECTED_YEAR"),
+                arguments.getInt("SELECTED_MONTH"),
+                arguments.getInt("SELECTED_DAY"),
+                arguments.getInt("SELECTED_DAYOFWEEK"))
+        inputTarget = Constants.CATEGORY
+        termsOfPayment = arguments.getInt("SELECTED_TERMSOFPAYMENT")
+        type = arguments.getInt("SELECTED_TYPE")
+        selectedId = arguments.getInt("SELECTED_ID")
     }
 
     //===
     //=== initialize value of each view and field
     //===
     override fun setViews(a: FragmentActivity) {
-        // get parameters from list item
-        selectedId = arguments.getInt("SELECTED_ID")
-        selectedDate.setDate(
-                arguments.getInt("SELECTED_YEAR"),
-                arguments.getInt("SELECTED_MONTH"),
-                arguments.getInt("SELECTED_DAY"),
-                arguments.getInt("SELECTED_DAYOFWEEK"))
-        priceStack.setPrice(arguments.getInt("SELECTED_PRICE"))
-        val category = arguments.getString("SELECTED_CATEGORY")
-        val type = arguments.getInt("SELECTED_TYPE")
-        val detail = arguments.getString("SELECTED_DETAIL")
-        val termsOfPayment = arguments.getInt("SELECTED_TERMSOFPAYMENT")
         // set text in category textbox
-        (a.findViewById(R.id.et_category) as EditText).setText(category)
+        (a.findViewById(R.id.et_category) as EditText).setText(arguments.getString("SELECTED_CATEGORY"))
         // set text in detail textbox
-        (a.findViewById(R.id.et_detail) as EditText).setText(detail)
+        (a.findViewById(R.id.et_detail) as EditText).setText(arguments.getString("SELECTED_DETAIL"))
         // select category
-        onCategorySelected(a)
+        setCategoryView()
         // select income or expense
         when (type) {
-            Constants.INCOME -> onIncomeSelected(a.findViewById(R.id.tv_income) as TextView, a)
-            Constants.EXPENSE -> onExpenseSelected(a.findViewById(R.id.tv_expense) as TextView, a)
+            Constants.INCOME -> setIncomeView()
+            Constants.EXPENSE -> setExpenseView()
         }
         // select cash or card
         when (termsOfPayment) {
-            Constants.CASH -> onCashSelected(a.findViewById(R.id.tv_cash) as TextView, a)
-            Constants.CARD -> onCardSelected(a.findViewById(R.id.tv_card) as TextView, a)
+            Constants.CASH -> setCashView()
+            Constants.CARD -> setCardView()
         }
-        // price (set 0)
+        // price
         (a.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()
-        // date (set today)
-        selectedDate.setDate(Calendar.getInstance())
+        // date
         (a.findViewById(R.id.tv_year) as TextView).text = getString(R.string.show_year, selectedDate.year)
         (a.findViewById(R.id.tv_monthAndDay) as TextView).text = getString(R.string.show_monthday, selectedDate.month, selectedDate.day)
         (a.findViewById(R.id.tv_dayOfWeek) as TextView).text = getString(R.string.show_dayofweek, Constants.WEEKNAME[selectedDate.dayOfWeek - 1])
