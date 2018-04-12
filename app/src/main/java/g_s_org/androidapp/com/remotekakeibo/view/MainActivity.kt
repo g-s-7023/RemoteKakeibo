@@ -18,13 +18,13 @@ class MainActivity : AppCompatActivity(), FragmentToActivityInterection {
                 .commit()
     }
 
-    override fun changePage(to: Fragment) {
+    override fun changeFragment(to: Fragment) {
         // replace current fragment for "to"
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, to).addToBackStack(null).commit()
     }
 
-    override fun backPage() {
+    override fun backFragment() {
         // remove current fragment and pop backstack
         val manager = supportFragmentManager
         manager.popBackStack()

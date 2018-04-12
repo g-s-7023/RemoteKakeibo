@@ -51,51 +51,46 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     abstract fun initValues()
 
     //===
-    //=== set values to each view
-    //===
-    abstract fun setViews(a: FragmentActivity)
-
-    //===
     //=== set listener of each view
     //===
-    open fun setListeners(a: FragmentActivity) {
+    open fun setListeners() {
         // list
-        (a.findViewById(R.id.lv_categoryAndDetail) as ListView).setOnItemClickListener { parent, _, position, _ -> onListSelected(parent, position) }
+        (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).setOnItemClickListener { parent, _, position, _ -> onListSelected(parent, position) }
         // category textbox
-        (a.findViewById(R.id.et_category) as EditText).setOnFocusChangeListener { _, hasFocus -> onCategoryFocused(hasFocus) }
+        (mCaller.findViewById(R.id.et_category) as EditText).setOnFocusChangeListener { _, hasFocus -> onCategoryFocused(hasFocus) }
         // detail textbox
-        (a.findViewById(R.id.et_detail) as EditText).setOnFocusChangeListener { _, hasFocus -> onDetailFocused(hasFocus) }
+        (mCaller.findViewById(R.id.et_detail) as EditText).setOnFocusChangeListener { _, hasFocus -> onDetailFocused(hasFocus) }
         // card button
-        (a.findViewById(R.id.tv_card) as TextView).setOnClickListener { onCardSelected() }
+        (mCaller.findViewById(R.id.tv_card) as TextView).setOnClickListener { onCardSelected() }
         // cash button
-        (a.findViewById(R.id.tv_cash) as TextView).setOnClickListener { onCashSelected() }
+        (mCaller.findViewById(R.id.tv_cash) as TextView).setOnClickListener { onCashSelected() }
         // income button
-        (a.findViewById(R.id.tv_income) as TextView).setOnClickListener { onIncomeSelected() }
+        (mCaller.findViewById(R.id.tv_income) as TextView).setOnClickListener { onIncomeSelected() }
         // expense button
-        (a.findViewById(R.id.tv_expense) as TextView).setOnClickListener { onExpenseSelected() }
+        (mCaller.findViewById(R.id.tv_expense) as TextView).setOnClickListener { onExpenseSelected() }
         // date button
-        (a.findViewById(R.id.rl_date) as RelativeLayout).setOnClickListener { onDateSelected() }
+        (mCaller.findViewById(R.id.rl_date) as RelativeLayout).setOnClickListener { onDateSelected() }
         // left button
-        (a.findViewById(R.id.bt_left) as Button).setOnClickListener { onLeftButtonClicked() }
+        (mCaller.findViewById(R.id.bt_left) as Button).setOnClickListener { onLeftButtonClicked() }
         // right button
-        (a.findViewById(R.id.bt_right) as Button).setOnClickListener { onRightButtonClicked() }
+        (mCaller.findViewById(R.id.bt_right) as Button).setOnClickListener { onRightButtonClicked() }
         // center button
-        (a.findViewById(R.id.bt_center) as Button).setOnClickListener { onCenterButtonClicked() }
+        (mCaller.findViewById(R.id.bt_center) as Button).setOnClickListener { onCenterButtonClicked() }
         // ten key
-        (a.findViewById(R.id.bt_nine) as Button).setOnClickListener { onTenKeyClicked('9') }
-        (a.findViewById(R.id.bt_eight) as Button).setOnClickListener { onTenKeyClicked('8') }
-        (a.findViewById(R.id.bt_seven) as Button).setOnClickListener { onTenKeyClicked('7') }
-        (a.findViewById(R.id.bt_six) as Button).setOnClickListener { onTenKeyClicked('6') }
-        (a.findViewById(R.id.bt_five) as Button).setOnClickListener { onTenKeyClicked('5') }
-        (a.findViewById(R.id.bt_four) as Button).setOnClickListener { onTenKeyClicked('4') }
-        (a.findViewById(R.id.bt_three) as Button).setOnClickListener { onTenKeyClicked('3') }
-        (a.findViewById(R.id.bt_two) as Button).setOnClickListener { onTenKeyClicked('2') }
-        (a.findViewById(R.id.bt_one) as Button).setOnClickListener { onTenKeyClicked('1') }
-        (a.findViewById(R.id.bt_zero) as Button).setOnClickListener { onTenKeyClicked('0') }
+        (mCaller.findViewById(R.id.bt_nine) as Button).setOnClickListener { onTenKeyClicked('9') }
+        (mCaller.findViewById(R.id.bt_eight) as Button).setOnClickListener { onTenKeyClicked('8') }
+        (mCaller.findViewById(R.id.bt_seven) as Button).setOnClickListener { onTenKeyClicked('7') }
+        (mCaller.findViewById(R.id.bt_six) as Button).setOnClickListener { onTenKeyClicked('6') }
+        (mCaller.findViewById(R.id.bt_five) as Button).setOnClickListener { onTenKeyClicked('5') }
+        (mCaller.findViewById(R.id.bt_four) as Button).setOnClickListener { onTenKeyClicked('4') }
+        (mCaller.findViewById(R.id.bt_three) as Button).setOnClickListener { onTenKeyClicked('3') }
+        (mCaller.findViewById(R.id.bt_two) as Button).setOnClickListener { onTenKeyClicked('2') }
+        (mCaller.findViewById(R.id.bt_one) as Button).setOnClickListener { onTenKeyClicked('1') }
+        (mCaller.findViewById(R.id.bt_zero) as Button).setOnClickListener { onTenKeyClicked('0') }
         // back key
-        (a.findViewById(R.id.bt_back) as Button).setOnClickListener { onBackKeyClicked() }
+        (mCaller.findViewById(R.id.bt_back) as Button).setOnClickListener { onBackKeyClicked() }
         // clear key
-        (a.findViewById(R.id.bt_clear) as Button).setOnClickListener { onClearKeyClicked() }
+        (mCaller.findViewById(R.id.bt_clear) as Button).setOnClickListener { onClearKeyClicked() }
     }
 
     //===
@@ -244,6 +239,15 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         mv.text = getString(R.string.show_monthday, m, d)
         dv.text = getString(R.string.show_dayofweek, Constants.WEEKNAME[date.dayOfWeek - 1])
     }
+    
+    fun setToday(yv: TextView, mv: TextView, dv: TextView, date: KakeiboDate){
+        // set year, month, day of today
+        date.setDate(Calendar.getInstance())
+        // show
+        yv.text = getString(R.string.show_year, date.year)
+        mv.text = getString(R.string.show_monthday, date.month, date.day)
+        dv.text = getString(R.string.show_dayofweek, Constants.WEEKNAME[date.dayOfWeek - 1])
+    }
 
     // set category's value to which is selected from list
     fun setCategoryFromList(cv: EditText, dv: EditText, c: String) {
@@ -305,39 +309,32 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     //===
     //=== set contentsValue to store
     //===
-    fun getContentValues(a: Activity): ContentValues {
+    fun getContentValues(cat:String, det:String, date:KakeiboDate, price: Deque<Char>, con: Array<Int>): ContentValues {
         // contentValues to return
         val cv = ContentValues()
         // set value of category
-        var category = (a.findViewById(R.id.et_category) as EditText).text.toString()
-        cv.put("category", category)
+        cv.put("category", cat)
         // set value of detail
-        val detail = (a.findViewById(R.id.et_detail) as EditText).text.toString()
-        cv.put("detail", detail)
+        cv.put("detail", det)
         // set kakeibo name
         cv.put("kakeiboName", Constants.KAKEIBONAME_MINE)
         // set date
-        cv.put("year", selectedDate.year)
-        cv.put("month", selectedDate.month)
-        cv.put("day", selectedDate.day)
-        cv.put("dayOfWeek", selectedDate.dayOfWeek)
-        // set income / expense
-        cv.put("type", type)
+        cv.put("year", date.year)
+        cv.put("month", date.month)
+        cv.put("day", date.day)
+        cv.put("dayOfWeek", date.dayOfWeek)
         // set price
         val priceString = StringBuilder()
-        while (priceStack.size > 0) {
-            priceString.append(priceStack.removeFirst())
+        while (price.size > 0) {
+            priceString.append(price.removeFirst())
         }
         cv.put("price", Integer.parseInt(priceString.toString()))
         // set terms of payment
-        cv.put("termsOfPayment", termsOfPayment)
-        // set delete flag
-        cv.put("isDeleted", Constants.FALSE)
+        cv.put("termsOfPayment", con[Constants.TERMS_OF_PAYMENT])
+        // set income / expense
+        cv.put("type", con[Constants.TYPE])
         // set synchronized flag
         cv.put("isSynchronized", Constants.FALSE)
-        // set last update date
-        val ludString = StringBuilder(SimpleDateFormat(sdf).format(Calendar.getInstance().time))
-        cv.put("lastUpdatedDate", ludString.toString())
         return cv
     }
 

@@ -19,6 +19,12 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     // ID of selected entry
     var selectedId: Int = -1
 
+
+
+    // ここから
+
+
+
     //===
     //=== on view created
     //===
@@ -110,7 +116,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     //===
     fun pageBack(a: FragmentActivity) {
         if (a is FragmentToActivityInterection){
-            a.backPage()
+            a.backFragment()
         } else {
             throw UnsupportedOperationException("Listener is not implemented")
         }

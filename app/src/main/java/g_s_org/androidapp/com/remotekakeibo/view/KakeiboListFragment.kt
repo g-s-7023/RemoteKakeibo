@@ -3,7 +3,6 @@ package g_s_org.androidapp.com.remotekakeibo.view
 import android.app.Activity
 import android.content.Context
 import android.database.Cursor
-import android.database.SQLException
 import android.database.sqlite.SQLiteException
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -108,7 +107,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     // new entry button
     fun onNewEntryClicked(a: Activity) {
         if (a is FragmentToActivityInterection) {
-            a.backPage()
+            a.backFragment()
         } else {
             throw UnsupportedOperationException("Listener is not implemented")
         }
@@ -121,7 +120,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 item.date.day, item.date.dayOfWeek, item.category, item.type, item.price, item.detail, item.termsOfPayment)
         // move to UpdateFragment
         if (mCaller is FragmentToActivityInterection) {
-            (mCaller as FragmentToActivityInterection).changePage(fragment)
+            (mCaller as FragmentToActivityInterection).changeFragment(fragment)
         } else {
             throw UnsupportedOperationException("Listener is not implemented")
         }

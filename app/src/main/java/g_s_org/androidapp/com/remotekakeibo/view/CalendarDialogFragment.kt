@@ -19,6 +19,7 @@ import android.widget.TextView
 
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
+import java.util.*
 
 
 class CalendarDialogFragment : DialogFragment(), DatePickerDialog.OnDateSetListener {
@@ -68,6 +69,22 @@ class CalendarDialogFragment : DialogFragment(), DatePickerDialog.OnDateSetListe
             args.putInt("ORIGINAL_YEAR", y)
             args.putInt("ORIGINAL_MONTH", m)
             args.putInt("ORIGINAL_DAY", d)
+            // pass arguments to fragment
+            fragment.arguments = args
+            // prohibit cancel with "return" button
+            fragment.isCancelable = false
+            // return fragment
+            return fragment
+        }
+
+        fun newInstance(date:Calendar): CalendarDialogFragment {
+            // fragment
+            val fragment = CalendarDialogFragment()
+            // set year, month, day when "date" is tapped
+            val args = Bundle()
+            args.putInt("ORIGINAL_YEAR", date.get(Calendar.YEAR))
+            args.putInt("ORIGINAL_MONTH", date.get(Calendar.MONTH))
+            args.putInt("ORIGINAL_DAY", date.get(Calendar.DAY_OF_MONTH))
             // pass arguments to fragment
             fragment.arguments = args
             // prohibit cancel with "return" button

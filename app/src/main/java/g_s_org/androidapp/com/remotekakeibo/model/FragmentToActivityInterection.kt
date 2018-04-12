@@ -4,6 +4,6 @@ import android.support.v4.app.Fragment
 
 
 interface FragmentToActivityInterection {
-    fun changePage(to: Fragment)
-    fun backPage()
+    fun changeFragment(to: Fragment)
+    fun backFragment()
 }
