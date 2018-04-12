@@ -14,6 +14,7 @@ import g_s_org.androidapp.com.remotekakeibo.common.Constants
 
 
 class KakeiboListAdapter(private val mValues: MutableList<KakeiboListItem>, private val mListener: OnKakeiboListItemClickListener) : RecyclerView.Adapter<KakeiboListAdapter.ViewHolder>() {
+
     // create view holder with layout
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)

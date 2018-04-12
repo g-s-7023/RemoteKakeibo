@@ -9,12 +9,11 @@ import android.widget.TextView
 
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
-import g_s_org.androidapp.com.remotekakeibo.common.DBAccessHelper
+import g_s_org.androidapp.com.remotekakeibo.model.DBAccessHelper
 import g_s_org.androidapp.com.remotekakeibo.model.FragmentToActivityInterection
 import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDBAccess
 import g_s_org.androidapp.com.remotekakeibo.model.getPrice
 import g_s_org.androidapp.com.remotekakeibo.model.setPrice
-import java.util.*
 
 class KakeiboUpdateFragment : KakeiboInputFragment() {
     // ID of selected entry
@@ -54,16 +53,16 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
         // set text in detail textbox
         (a.findViewById(R.id.et_detail) as EditText).setText(arguments.getString("SELECTED_DETAIL"))
         // select category
-        setCategoryView()
+        setCategory()
         // select income or expense
         when (type) {
-            Constants.INCOME -> setIncomeView()
-            Constants.EXPENSE -> setExpenseView()
+            Constants.INCOME -> setIncome()
+            Constants.EXPENSE -> setExpense()
         }
         // select cash or card
         when (termsOfPayment) {
-            Constants.CASH -> setCashView()
-            Constants.CARD -> setCardView()
+            Constants.CASH -> setCash()
+            Constants.CARD -> setCard()
         }
         // price
         (a.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()

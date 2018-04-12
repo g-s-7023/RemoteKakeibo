@@ -1,14 +1,11 @@
 package g_s_org.androidapp.com.remotekakeibo.model
 
 import android.app.Activity
-import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
-import android.widget.EditText
 import android.widget.Toast
 import g_s_org.androidapp.com.remotekakeibo.R
-import g_s_org.androidapp.com.remotekakeibo.common.DBAccessHelper
 
 class KakeiboDBAccess {
     // execute function passed

@@ -3,6 +3,8 @@ package g_s_org.androidapp.com.remotekakeibo.view
 import android.app.Activity
 import android.content.Context
 import android.database.Cursor
+import android.database.SQLException
+import android.database.sqlite.SQLiteException
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
@@ -90,29 +92,17 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     // previous month button
     fun onPreviousMonthClicked() {
         when (monthToList) {
-            1 -> {
-                yearToList--
-                monthToList = 12
-            }
-            else -> {
-                monthToList--
-            }
+            1 -> setKakeiboListView(yearToList - 1, 12)
+            else -> setKakeiboListView(yearToList, monthToList - 1)
         }
-        setKakeiboListView(yearToList, monthToList)
     }
 
     // next month button
     fun onNextMonthClicked() {
         when (monthToList) {
-            12 -> {
-                yearToList++
-                monthToList = 1
-            }
-            else -> {
-                monthToList++
-            }
+            12 -> setKakeiboListView(yearToList + 1, 1)
+            else -> setKakeiboListView(yearToList, monthToList + 1)
         }
-        setKakeiboListView(yearToList, monthToList)
     }
 
     // new entry button
@@ -138,12 +128,16 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
 
     //===
-    //=== view setters
+    //=== view and value setters
     //===
     fun setKakeiboListView(y: Int, m: Int) {
+        // set value
+        yearToList = y
+        monthToList = m
         // read DB
         val cursor: Cursor? = KakeiboDBAccess().readAllKakeibo(mCaller, y, m)
-        if (cursor != null) {
+        // getKakeiboList may throw SQLiteException
+        cursor?.use {
             // get kakeibo list
             val (kList, totalIncome, totalExpence) = getKakeiboList(cursor, mutableListOf(), KakeiboDate(), 0, 0, 0, 0, cursor.moveToNext(), true)
             // set recycler view
@@ -189,47 +183,44 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     //===
     //=== business logic
     //===
+    @Throws(SQLiteException::class)
     private tailrec fun getKakeiboList(c: Cursor, l: MutableList<KakeiboListItem>, previousDate: KakeiboDate, si: Int, se: Int, ti: Int, te: Int,
                                        isContinue: Boolean, isFirst: Boolean): Triple<MutableList<KakeiboListItem>, Int, Int> {
-        c.use {
-            if (!isContinue) {
-                // after the last entry
-                if (!isFirst) {
-                    // if list is not empty, set subtotal(income, expense)
-                    l.add(KakeiboListItem(true, previousDate, si, se))
-                }
-                // change the order to Descendant
-                return Triple(l.reversed() as MutableList<KakeiboListItem>, ti, te)
+        if (!isContinue) {
+            // after the last entry
+            if (!isFirst) {
+                // if list is not empty, set subtotal(income, expense)
+                l.add(KakeiboListItem(true, previousDate, si, se))
             }
-            // set current date
-            val currentDate = KakeiboDate(it.getInt(it.getColumnIndex("year")),
-                    it.getInt(it.getColumnIndex("month")),
-                    it.getInt(it.getColumnIndex("day")),
-                    it.getInt(it.getColumnIndex("dayOfWeek")))
-            when (currentDate.isSameDate(previousDate) || isFirst) {
-                false -> {
-                    // if the date changes, set subtotal
-                    l.add(KakeiboListItem(true, previousDate, si, se))
-                    return getKakeiboList(c, l, currentDate, 0, 0, ti, te, true, false)
-                }
-                true -> {
-                    // if the same date, set data row and move to next entry
-                    val type = it.getInt(it.getColumnIndex("type"))
-                    val price = it.getInt(it.getColumnIndex("price"))
-                    val income = if (type == Constants.INCOME) price else 0
-                    val expense = if (type == Constants.EXPENSE) price else 0
-                    l.add(KakeiboListItem(it.getInt(it.getColumnIndex("id")),
-                            currentDate,
-                            it.getString(it.getColumnIndex("category")),
-                            type,
-                            price,
-                            it.getString(it.getColumnIndex("detail")),
-                            it.getInt(it.getColumnIndex("termsOfPayment"))))
-                    return getKakeiboList(c, l, currentDate, si + income, se + expense, ti + income, te + expense, it.moveToNext(), false)
-                }
+            // change the order to Descendant
+            return Triple(l.reversed() as MutableList<KakeiboListItem>, ti, te)
+        }
+        // set current date
+        val currentDate = KakeiboDate(c.getInt(c.getColumnIndex("year")),
+                c.getInt(c.getColumnIndex("month")),
+                c.getInt(c.getColumnIndex("day")),
+                c.getInt(c.getColumnIndex("dayOfWeek")))
+        when (currentDate.isSameDate(previousDate) || isFirst) {
+            false -> {
+                // if the date changes, set subtotal
+                l.add(KakeiboListItem(true, previousDate, si, se))
+                return getKakeiboList(c, l, currentDate, 0, 0, ti, te, true, false)
+            }
+            true -> {
+                // if the same date, set data row and move to next entry
+                val type = c.getInt(c.getColumnIndex("type"))
+                val price = c.getInt(c.getColumnIndex("price"))
+                val income = if (type == Constants.INCOME) price else 0
+                val expense = if (type == Constants.EXPENSE) price else 0
+                l.add(KakeiboListItem(c.getInt(c.getColumnIndex("id")),
+                        currentDate,
+                        c.getString(c.getColumnIndex("category")),
+                        type,
+                        price,
+                        c.getString(c.getColumnIndex("detail")),
+                        c.getInt(c.getColumnIndex("termsOfPayment"))))
+                return getKakeiboList(c, l, currentDate, si + income, se + expense, ti + income, te + expense, c.moveToNext(), false)
             }
         }
     }
-
-
 }

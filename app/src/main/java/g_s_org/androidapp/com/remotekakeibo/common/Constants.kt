@@ -89,6 +89,13 @@ class Constants{
         //=== default year
         //===
         const val DEFAULT_YEAR = 2000
+        //===
+        //=== condition
+        //===
+        const val INPUT_TARGET = 0
+        const val TERMS_OF_PAYMENT = 1
+        const val TYPE = 2
+
 
     }
 }

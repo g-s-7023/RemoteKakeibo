@@ -13,7 +13,9 @@ class MainActivity : AppCompatActivity(), FragmentToActivityInterection {
         // set view
         setContentView(R.layout.activity_main)
         // set fragment
-        supportFragmentManager.beginTransaction().replace(R.id.container, KakeiboAddFragment())
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.container, KakeiboAddFragment())
+                .commit()
     }
 
     override fun changePage(to: Fragment) {
@@ -21,23 +23,10 @@ class MainActivity : AppCompatActivity(), FragmentToActivityInterection {
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, to).addToBackStack(null).commit()
     }
+
     override fun backPage() {
         // remove current fragment and pop backstack
         val manager = supportFragmentManager
         manager.popBackStack()
     }
-
-    /*
-    override fun changePage(to: Fragment) {
-        // replace current fragment for "to"
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, to).addToBackStack(null).commit()
-    }
-    override fun backPage() {
-        // remove current fragment and pop backstack
-        val manager = supportFragmentManager
-        manager.popBackStack()
-    }
-    */
-
 }

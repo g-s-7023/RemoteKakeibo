@@ -50,7 +50,7 @@ class DatePickerDialogFragment : DialogFragment() {
                 // set picker
                 .setView(picker)
                 .setTitle(R.string.title_yearandmonth)
-                .setPositiveButton(R.string.bt_ok) { dialog, which ->
+                .setPositiveButton(R.string.bt_ok) { _, _ ->
                     val parent = parentFragment
                     // set callback
                     if (parent is DatePickerCallback) {
@@ -70,6 +70,7 @@ class DatePickerDialogFragment : DialogFragment() {
         fun onDialogYearMonthSelected(year: Int, month: Int)
     }
 
+    // factory method
     companion object {
         fun newInstance(y: Int, m: Int): DatePickerDialogFragment {
             // fragment

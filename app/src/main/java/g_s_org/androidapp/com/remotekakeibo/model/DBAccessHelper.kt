@@ -1,4 +1,4 @@
-package g_s_org.androidapp.com.remotekakeibo.common
+package g_s_org.androidapp.com.remotekakeibo.model
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -50,7 +50,7 @@ class DBAccessHelper(ctx: Context) : SQLiteOpenHelper(ctx, DB_NAME, null, DB_VER
         Log.d(TAG, LOG_DBUPGRADE)
         try {
             // delete old table
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
+            db.execSQL("DROP TABLE IF EXISTS ${TABLE_NAME}")
             // create new table
             onCreate(db)
         } catch (e: Exception) {
