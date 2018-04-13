@@ -17,6 +17,7 @@ import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDate
 import g_s_org.androidapp.com.remotekakeibo.dbaccess.DetailHistoryAccess
 import g_s_org.androidapp.com.remotekakeibo.model.getPrice
 import g_s_org.androidapp.com.remotekakeibo.R
+import g_s_org.androidapp.com.remotekakeibo.model.setPrice
 import java.text.SimpleDateFormat
 
 import java.util.*
@@ -29,7 +30,7 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     // selected year, month, and day
     protected var selectedDate: KakeiboDate = KakeiboDate()
     // condition
-    protected var condition: Array<Int> = arrayOf(3)
+    protected var condition = Array<Int>(3, {-1})
 
     override fun onAttach(context: Context?) {
         if (context is FragmentActivity) mCaller = context
@@ -205,30 +206,35 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     //===
     //=== business logic
     //===
-    fun addPrice(v: TextView, p: Deque<Char>, k: Char) {
-        if (p.size < MAXDIGITS) {
-            if (p.size == 1 && p.first == '0') {
+    fun addPrice(v: TextView, s: Deque<Char>, k: Char) {
+        if (s.size < MAXDIGITS) {
+            if (s.size == 1 && s.first == '0') {
                 // delete 0 if stack contains only 0
-                p.removeLast()
+                s.removeLast()
             }
-            p.addLast(k)
-            v.text = p.getPrice()
+            s.addLast(k)
+            v.text = s.getPrice()
         }
     }
 
-    fun clearPrice(v: TextView, p: Deque<Char>) {
-        p.clear()
-        p.addLast('0')
-        v.text = p.getPrice()
+    fun clearPrice(v: TextView, s: Deque<Char>) {
+        s.clear()
+        s.addLast('0')
+        v.text = s.getPrice()
     }
 
-    fun removePrice(v: TextView, p: Deque<Char>) {
-        p.removeLast()
-        if (p.size == 0) {
+    fun removePrice(v: TextView, s: Deque<Char>) {
+        s.removeLast()
+        if (s.size == 0) {
             // if priceStack becomes empty, add 0
-            p.addLast('0')
+            s.addLast('0')
         }
-        v.text = p.getPrice()
+        v.text = s.getPrice()
+    }
+    
+    fun setPrice(v: TextView, s:Deque<Char>, p:Int){
+        s.setPrice(p)
+        v.text = s.getPrice()
     }
 
     fun setDate(y: Int, m: Int, d: Int, yv: TextView, mv: TextView, dv: TextView, date: KakeiboDate) {

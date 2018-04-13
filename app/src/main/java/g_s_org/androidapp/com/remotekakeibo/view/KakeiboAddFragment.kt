@@ -15,8 +15,6 @@ import g_s_org.androidapp.com.remotekakeibo.model.DBAccessHelper
 import g_s_org.androidapp.com.remotekakeibo.dbaccess.DetailHistoryAccess
 import g_s_org.androidapp.com.remotekakeibo.model.FragmentToActivityInterection
 import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDBAccess
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class KakeiboAddFragment : KakeiboInputFragment() {
@@ -29,7 +27,6 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         setListeners()
         super.onViewCreated(view, savedInstanceState)
     }
-
     //===
     //=== initialize view and values
     //===
@@ -39,6 +36,9 @@ class KakeiboAddFragment : KakeiboInputFragment() {
                 mCaller.findViewById(R.id.tv_monthAndDay) as TextView,
                 mCaller.findViewById(R.id.tv_dayOfWeek) as TextView,
                 selectedDate)
+        // set button name
+        (mCaller.findViewById(R.id.bt_left) as Button).text = getString(R.string.bt_save)
+        (mCaller.findViewById(R.id.bt_right) as Button).text = getString(R.string.bt_list)
         resetValues()
     }
 
@@ -68,13 +68,17 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         // set center button invisible
         (mCaller.findViewById(R.id.bt_center) as Button).visibility = View.INVISIBLE
     }
-
     //===
     //=== listeners
     //===
     // save button
     override fun onLeftButtonClicked() {
-        saveData(mCaller, mCaller.findViewById(R.id.et_detail) as EditText)
+        // contentValues to insert
+        val cv = getContentValues((mCaller.findViewById(R.id.et_category) as EditText).text.toString(),
+                (mCaller.findViewById(R.id.et_detail) as EditText).text.toString(),
+                selectedDate, priceStack, condition)
+        // insert
+        saveData(mCaller, cv, (mCaller.findViewById(R.id.et_detail) as EditText).text.toString())
     }
 
     // list button
@@ -84,7 +88,6 @@ class KakeiboAddFragment : KakeiboInputFragment() {
 
     // hidden (no function)
     override fun onCenterButtonClicked() {}
-
     //===
     //=== business logic
     //===
@@ -99,17 +102,13 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         }
     }
 
-    private fun saveData(a:Activity, dv:EditText){
-        // contentValues to insert
-        val cv = getContentValues((a.findViewById(R.id.et_category) as EditText).text.toString(),
-                (a.findViewById(R.id.et_detail) as EditText).text.toString(),
-                selectedDate, priceStack, condition)
+    private fun saveData(a:Activity, cv:ContentValues, d:String){
         // insert to DB
         KakeiboDBAccess().execWrite(a){ db:SQLiteDatabase->
             db.insert(DBAccessHelper.TABLE_NAME, null, cv)
         }
         // save detail to preference
-        DetailHistoryAccess().savePreference(dv.text.toString(), a)
+        DetailHistoryAccess().savePreference(d, a)
         // initialize values(except date)
         resetValues()
     }
