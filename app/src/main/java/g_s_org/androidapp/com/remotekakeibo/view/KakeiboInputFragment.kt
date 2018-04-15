@@ -32,9 +32,16 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     // condition
     protected var condition = Array<Int>(3, {-1})
 
+    //===
+    //=== callback from lifecycle
+    //===
     override fun onAttach(context: Context?) {
-        if (context is FragmentActivity) mCaller = context
         super.onAttach(context)
+        if (context is FragmentActivity){
+            mCaller = context
+        } else {
+            throw UnsupportedOperationException("caller should be Fragment Activity")
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -102,14 +109,11 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         // act depends on current input target
         when (condition[Constants.INPUT_TARGET]) {
             Constants.CATEGORY -> {
-                setCategoryFromList(mCaller.findViewById(R.id.et_category) as EditText,
-                        mCaller.findViewById(R.id.et_category) as EditText,
-                        (parent as ListView).getItemAtPosition(pos) as String)
+                setCategoryFromList((parent as ListView).getItemAtPosition(pos) as String)
                 // onDetailFocused is called, succeeded by requestFocus() in setCategoryFromList()
             }
             Constants.DETAIL -> {
-                setDetailFromList(mCaller.findViewById(R.id.et_category) as EditText,
-                        (parent as ListView).getItemAtPosition(pos) as String)
+                setDetailFromList((parent as ListView).getItemAtPosition(pos) as String)
             }
         }
     }
@@ -117,58 +121,42 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     fun onCategoryFocused(hasFocus: Boolean) {
         if (condition[Constants.INPUT_TARGET] != Constants.CATEGORY && hasFocus) {
             // change input target to category
-            setCategoryAndDetail(mCaller.findViewById(R.id.et_detail) as EditText,
-                    mCaller.findViewById(R.id.et_category) as EditText,
-                    mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView,
-                    resources.getStringArray(R.array.lv_category_and_detail),
-                    condition, Constants.CATEGORY, mCaller)
+            setCategory()
         }
     }
 
     fun onDetailFocused(hasFocus: Boolean) {
         if (condition[Constants.INPUT_TARGET] != Constants.DETAIL && hasFocus) {
             // change input target to detail
-            setCategoryAndDetail(mCaller.findViewById(R.id.et_category) as EditText,
-                    mCaller.findViewById(R.id.et_detail) as EditText,
-                    mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView,
-                    DetailHistoryAccess().getPreference(mCaller),
-                    condition, Constants.DETAIL, mCaller)
+            setDetail()
         }
     }
 
     fun onCardSelected() {
         if (condition[Constants.TERMS_OF_PAYMENT] == Constants.CASH) {
             // select "card" if card is not selected
-            setCardAndCash(mCaller.findViewById(R.id.tv_cash) as TextView,
-                    mCaller.findViewById(R.id.tv_card) as TextView,
-                    condition, Constants.CARD)
+            setCard()
         }
     }
 
     fun onCashSelected() {
         if (condition[Constants.TERMS_OF_PAYMENT] == Constants.CARD) {
             // select "cash" if cash is not selected
-            setCardAndCash(mCaller.findViewById(R.id.tv_card) as TextView,
-                    mCaller.findViewById(R.id.tv_cash) as TextView,
-                    condition, Constants.CASH)
+            setCash()
         }
     }
 
     fun onIncomeSelected() {
         // select "income" if cash is not selected
         if (condition[Constants.TYPE] == Constants.EXPENSE) {
-            setIncomeAndExpense(mCaller.findViewById(R.id.tv_expense) as TextView,
-                    mCaller.findViewById(R.id.tv_income) as TextView,
-                    condition, Constants.INCOME)
+            setIncome()
         }
     }
 
     fun onExpenseSelected() {
         // select "expense" if expense is not selected
         if (condition[Constants.TYPE] == Constants.INCOME) {
-            setIncomeAndExpense(mCaller.findViewById(R.id.tv_income) as TextView,
-                    mCaller.findViewById(R.id.tv_expense) as TextView,
-                    condition, Constants.EXPENSE)
+            setExpense()
         }
     }
 
@@ -179,15 +167,15 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     }
 
     fun onTenKeyClicked(k: Char) {
-        addPrice((mCaller.findViewById(R.id.tv_priceValue) as TextView), priceStack, k)
+        addPrice(k)
     }
 
     fun onBackKeyClicked() {
-        removePrice((mCaller.findViewById(R.id.tv_priceValue) as TextView), priceStack)
+        removePrice()
     }
 
     fun onClearKeyClicked() {
-        clearPrice((mCaller.findViewById(R.id.tv_priceValue) as TextView), priceStack)
+        clearPrice()
     }
 
     abstract fun onLeftButtonClicked()
@@ -196,125 +184,141 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
 
     // callback from calendar dialog
     override fun onDialogDateSelected(y: Int, m: Int, d: Int) {
-        setDate(y, m, d,
-                mCaller.findViewById(R.id.tv_year) as TextView,
-                mCaller.findViewById(R.id.tv_monthAndDay) as TextView,
-                mCaller.findViewById(R.id.tv_dayOfWeek) as TextView,
-                selectedDate)
+        setDate(y, m, d)
     }
 
     //===
-    //=== business logic
+    //=== view and value setter
     //===
-    fun addPrice(v: TextView, s: Deque<Char>, k: Char) {
-        if (s.size < MAXDIGITS) {
-            if (s.size == 1 && s.first == '0') {
+    fun addPrice(k: Char) {
+        if (priceStack.size < MAXDIGITS) {
+            if (priceStack.size == 1 && priceStack.first == '0') {
                 // delete 0 if stack contains only 0
-                s.removeLast()
+                priceStack.removeLast()
             }
-            s.addLast(k)
-            v.text = s.getPrice()
+            priceStack.addLast(k)
+            (mCaller.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()
         }
     }
 
-    fun clearPrice(v: TextView, s: Deque<Char>) {
-        s.clear()
-        s.addLast('0')
-        v.text = s.getPrice()
+    fun clearPrice() {
+        priceStack.clear()
+        priceStack.addLast('0')
+        (mCaller.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()
     }
 
-    fun removePrice(v: TextView, s: Deque<Char>) {
-        s.removeLast()
-        if (s.size == 0) {
+    fun removePrice() {
+        priceStack.removeLast()
+        if (priceStack.size == 0) {
             // if priceStack becomes empty, add 0
-            s.addLast('0')
+            priceStack.addLast('0')
         }
-        v.text = s.getPrice()
-    }
-    
-    fun setPrice(v: TextView, s:Deque<Char>, p:Int){
-        s.setPrice(p)
-        v.text = s.getPrice()
+        (mCaller.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()
     }
 
-    fun setDate(y: Int, m: Int, d: Int, yv: TextView, mv: TextView, dv: TextView, date: KakeiboDate) {
-        // set year, month ,day
-        date.setDate(y, m, d)
-        // show
-        yv.text = getString(R.string.show_year, y)
-        mv.text = getString(R.string.show_monthday, m, d)
-        dv.text = getString(R.string.show_dayofweek, Constants.WEEKNAME[date.dayOfWeek - 1])
+    fun setPrice(p:Int){
+        priceStack.setPrice(p)
+        (mCaller.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()
     }
-    
-    fun setToday(yv: TextView, mv: TextView, dv: TextView, date: KakeiboDate){
-        // set year, month, day of today
-        date.setDate(Calendar.getInstance())
+
+    fun setDate(y: Int, m: Int, d: Int) {
+        // set year, month ,day
+        selectedDate.setDate(y, m, d)
         // show
-        yv.text = getString(R.string.show_year, date.year)
-        mv.text = getString(R.string.show_monthday, date.month, date.day)
-        dv.text = getString(R.string.show_dayofweek, Constants.WEEKNAME[date.dayOfWeek - 1])
+        (mCaller.findViewById(R.id.tv_year) as TextView).text = getString(R.string.show_year, y)
+        (mCaller.findViewById(R.id.tv_monthAndDay) as TextView).text = getString(R.string.show_monthday, m, d)
+        (mCaller.findViewById(R.id.tv_dayOfWeek) as TextView).text = getString(R.string.show_dayofweek, Constants.WEEKNAME[selectedDate.dayOfWeek - 1])
+    }
+    fun setToday(){
+        // set year, month, day of today
+        selectedDate.setDate(Calendar.getInstance())
+        // show
+        (mCaller.findViewById(R.id.tv_year) as TextView).text = getString(R.string.show_year, selectedDate.year)
+        (mCaller.findViewById(R.id.tv_monthAndDay) as TextView).text = getString(R.string.show_monthday, selectedDate.month, selectedDate.day)
+        (mCaller.findViewById(R.id.tv_dayOfWeek) as TextView).text = getString(R.string.show_dayofweek, Constants.WEEKNAME[selectedDate.dayOfWeek - 1])
     }
 
     // set category's value to which is selected from list
-    fun setCategoryFromList(cv: EditText, dv: EditText, c: String) {
-        cv.setText(c)
+    fun setCategoryFromList(c: String) {
+        (mCaller.findViewById(R.id.et_category) as EditText).setText(c)
         // move focus on detail textbox
-        dv.requestFocus()
+        (mCaller.findViewById(R.id.et_detail) as EditText).requestFocus()
         // move cursor to the end of string
-        dv.setSelection(dv.text.toString().length)
+        (mCaller.findViewById(R.id.et_detail) as EditText)
+                .setSelection((mCaller.findViewById(R.id.et_detail) as EditText).text.toString().length)
     }
-
     // set detail's value to which is selected from list
-    fun setDetailFromList(dv: EditText, d: String) {
+    fun setDetailFromList(d: String) {
         // update detail textbox(stay focus)
-        dv.setText(d)
+        (mCaller.findViewById(R.id.et_detail) as EditText).setText(d)
         // move cursor to the end of string
-        dv.setSelection(dv.text.toString().length)
+        (mCaller.findViewById(R.id.et_detail) as EditText)
+                .setSelection((mCaller.findViewById(R.id.et_detail) as EditText).text.toString().length)
     }
-
-    fun setCategoryAndDetail(from: EditText, to: EditText, lv: ListView, valArr: Array<String>, con: Array<Int>, target: Int, a: Activity) {
+    fun setCategory(){
         // set back ground of detail textbox "unselected"
-        from.setBackgroundResource(R.drawable.categoryanddetail_noselected)
+        (mCaller.findViewById(R.id.et_detail) as EditText).setBackgroundResource(R.drawable.categoryanddetail_noselected)
         // set back ground of category textbox "selected"
-        to.setBackgroundResource(R.drawable.categoryanddetail_selected)
+        (mCaller.findViewById(R.id.et_category) as EditText).setBackgroundResource(R.drawable.categoryanddetail_selected)
         // set adapter to ListView
-        lv.adapter = ArrayAdapter<String>(a, android.R.layout.simple_list_item_1, valArr)
+        (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter=
+                ArrayAdapter<String>(mCaller, android.R.layout.simple_list_item_1, resources.getStringArray(R.array.lv_category_and_detail))
         // set input target value
-        con[Constants.INPUT_TARGET] = target
+        condition[Constants.INPUT_TARGET] = Constants.CATEGORY
+    }
+    fun setDetail(){
+        // set back ground of detail textbox "selected"
+        (mCaller.findViewById(R.id.et_detail) as EditText).setBackgroundResource(R.drawable.categoryanddetail_selected)
+        // set back ground of category textbox "unselected"
+        (mCaller.findViewById(R.id.et_category) as EditText).setBackgroundResource(R.drawable.categoryanddetail_noselected)
+        // set adapter to ListView
+        (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter=
+                ArrayAdapter<String>(mCaller, android.R.layout.simple_list_item_1, DetailHistoryAccess().getPreference(mCaller))
+        // set input target value
+        condition[Constants.INPUT_TARGET] = Constants.DETAIL
     }
 
-    fun setCardAndCash(from: TextView, to: TextView, con: Array<Int>, terms: Int) {
+    fun setCard() {
         // change background color of card textview to "unselected"
-        from.setBackgroundResource(R.drawable.termsandtype_noselected)
+        (mCaller.findViewById(R.id.tv_cash) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
         // change background color of cash textview to "selected"
-        to.setBackgroundResource(R.drawable.termsandtype_selected)
+        (mCaller.findViewById(R.id.tv_card) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
         // set termsOfPayment
-        con[Constants.TERMS_OF_PAYMENT] = terms
+        condition[Constants.TERMS_OF_PAYMENT] = Constants.CARD
     }
-
-    fun setIncomeAndExpense(from: TextView, to: TextView, con: Array<Int>, type: Int) {
+    fun setCash() {
+        // change background color of card textview to "selected"
+        (mCaller.findViewById(R.id.tv_cash) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
+        // change background color of cash textview to "unselected"
+        (mCaller.findViewById(R.id.tv_card) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+        // set termsOfPayment
+        condition[Constants.TERMS_OF_PAYMENT] = Constants.CASH
+    }
+    fun setIncome() {
         // change background color of card textview to "unselected"
-        from.setBackgroundResource(R.drawable.termsandtype_noselected)
+        (mCaller.findViewById(R.id.tv_expense) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
         // change background color of cash textview to "selected"
-        to.setBackgroundResource(R.drawable.termsandtype_selected)
+        (mCaller.findViewById(R.id.tv_income) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
         // set termsOfPayment
-        con[Constants.TYPE] = type
+        condition[Constants.TYPE] = Constants.INCOME
     }
-
+    fun setExpense() {
+        // change background color of card textview to "selected"
+        (mCaller.findViewById(R.id.tv_expense) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
+        // change background color of cash textview to "unselected"
+        (mCaller.findViewById(R.id.tv_income) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
+        // set termsOfPayment
+        condition[Constants.TYPE] = Constants.EXPENSE
+    }
     //===
-    //=== validation
+    //=== business logic
     //===
-    fun checkInput(): Boolean {
-        // activity which calls this fragment
-        val a = activity
+    // validation
+    fun checkInput(category:String): Boolean {
         // check value of category
-        var category = (a.findViewById(R.id.et_category) as EditText).text.toString()
         return category.isNotBlank()
     }
-
-    //===
-    //=== set contentsValue to store
-    //===
+    // get contentValues to save
     fun getContentValues(cat:String, det:String, date:KakeiboDate, price: Deque<Char>, con: Array<Int>): ContentValues {
         // contentValues to return
         val cv = ContentValues()
@@ -343,8 +347,6 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         cv.put("isSynchronized", Constants.FALSE)
         return cv
     }
-
-
 }
 
 

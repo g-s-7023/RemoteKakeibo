@@ -19,23 +19,19 @@ import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDBAccess
 
 class KakeiboAddFragment : KakeiboInputFragment() {
     //===
-    //=== on view created
+    //=== callback from lifecycle
     //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        // activity which call this fragment
+        super.onViewCreated(view, savedInstanceState)
         initValues()
         setListeners()
-        super.onViewCreated(view, savedInstanceState)
     }
     //===
     //=== initialize view and values
     //===
     override fun initValues() {
         // date (set today)
-        setToday(mCaller.findViewById(R.id.tv_year) as TextView,
-                mCaller.findViewById(R.id.tv_monthAndDay) as TextView,
-                mCaller.findViewById(R.id.tv_dayOfWeek) as TextView,
-                selectedDate)
+        setToday()
         // set button name
         (mCaller.findViewById(R.id.bt_left) as Button).text = getString(R.string.bt_save)
         (mCaller.findViewById(R.id.bt_right) as Button).text = getString(R.string.bt_list)
@@ -44,25 +40,17 @@ class KakeiboAddFragment : KakeiboInputFragment() {
 
     private fun resetValues(){
         // price (set 0)
-        clearPrice(mCaller.findViewById(R.id.tv_priceValue) as TextView, priceStack)
+        clearPrice()
         // clear text in category textbox
         (mCaller.findViewById(R.id.et_category) as EditText).setText("")
         // clear text in detail textbox
         (mCaller.findViewById(R.id.et_detail) as EditText).setText("")
         // select category
-        setCategoryAndDetail(mCaller.findViewById(R.id.et_detail) as EditText,
-                mCaller.findViewById(R.id.et_category) as EditText,
-                mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView,
-                resources.getStringArray(R.array.lv_category_and_detail),
-                condition, Constants.CATEGORY, mCaller)
+        setCategory()
         // select "cash"
-        setCardAndCash(mCaller.findViewById(R.id.tv_card) as TextView,
-                mCaller.findViewById(R.id.tv_cash) as TextView,
-                condition, Constants.CASH)
+        setCash()
         // select "expense"
-        setIncomeAndExpense(mCaller.findViewById(R.id.tv_income) as TextView,
-                mCaller.findViewById(R.id.tv_expense) as TextView,
-                condition, Constants.EXPENSE)
+        setExpense()
         // set focus on price (not to show keyboard)
         (mCaller.findViewById(R.id.tv_priceValue) as TextView).requestFocus()
         // set center button invisible
@@ -88,6 +76,7 @@ class KakeiboAddFragment : KakeiboInputFragment() {
 
     // hidden (no function)
     override fun onCenterButtonClicked() {}
+
     //===
     //=== business logic
     //===

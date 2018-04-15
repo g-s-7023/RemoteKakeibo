@@ -18,21 +18,18 @@ import android.widget.TextView
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.model.*
+import org.w3c.dom.Text
 import java.util.*
-
-
-// ページ遷移
 
 
 class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallback, KakeiboListAdapter.OnKakeiboListItemClickListener {
     private lateinit var mCaller: FragmentActivity
-    private var yearToList: Int = Constants.DEFAULT_YEAR
-    private var monthToList: Int = 1
+    private var currentYearMonth = arrayOf(Constants.DEFAULT_YEAR, 1)
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (mCaller is FragmentActivity) {
-            mCaller = context as FragmentActivity
+        if (context is FragmentActivity){
+            mCaller = context
         } else {
             throw UnsupportedOperationException("caller should be Fragment Activity")
         }
@@ -48,134 +45,97 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         initValues()
         // set listeners of buttons
         setListeners()
-        // show KakeiboList
-        setViews()
     }
 
+    //===
+    //=== initialize values
+    //===
     fun initValues() {
         if (arguments != null && arguments.containsKey("LISTED_YEAR") && arguments.containsKey("LISTED_MONTH")) {
-            yearToList = arguments.getInt("YEAR_TOLIST")
-            monthToList = arguments.getInt("MONTH_TOLIST")
+            setKakeiboListView(arguments.getInt("YEAR_TOLIST"), arguments.getInt("MONTH_TOLIST"))
         } else {
             val cal = Calendar.getInstance()
-            yearToList = cal.get(Calendar.YEAR)
-            monthToList = cal.get(Calendar.MONTH)
+            setKakeiboListView(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH))
         }
     }
 
+    //===
+    //=== set listeners of each view
+    //===
     fun setListeners() {
         // year and month
-        (mCaller.findViewById(R.id.ll_yearAndMonth) as LinearLayout).setOnClickListener { onYearOrMonthClicked(yearToList, monthToList) }
+        (mCaller.findViewById(R.id.ll_yearAndMonth) as LinearLayout).setOnClickListener { onYearOrMonthClicked() }
         // previous month
         (mCaller.findViewById(R.id.bt_previousmonth) as Button).setOnClickListener { onPreviousMonthClicked() }
         // next month
         (mCaller.findViewById(R.id.bt_nextmonth) as Button).setOnClickListener { onNextMonthClicked() }
         // new entry
-        (mCaller.findViewById(R.id.bt_new) as Button).setOnClickListener { onNewEntryClicked(mCaller) }
-    }
-
-    fun setViews() {
-        // list
-        setKakeiboListView(yearToList, monthToList)
+        (mCaller.findViewById(R.id.bt_new) as Button).setOnClickListener { onNewEntryClicked() }
     }
 
     //===
-    //=== listeners
+    //=== listeners and callback
     //===
     // year and month label
-    fun onYearOrMonthClicked(y: Int, d: Int) {
+    fun onYearOrMonthClicked() {
         // show DatePickerDialogFragment
-        DatePickerDialogFragment.newInstance(y, d).show(childFragmentManager, "dialog")
+        DatePickerDialogFragment.newInstance(currentYearMonth[Constants.CURRENT_YEAR], currentYearMonth[Constants.CURRENT_MONTH])
+                .show(childFragmentManager, "dialog")
     }
 
     // previous month button
     fun onPreviousMonthClicked() {
-        when (monthToList) {
-            1 -> setKakeiboListView(yearToList - 1, 12)
-            else -> setKakeiboListView(yearToList, monthToList - 1)
+        when (currentYearMonth[Constants.CURRENT_MONTH]) {
+            1 -> setKakeiboListView(currentYearMonth[Constants.CURRENT_YEAR] - 1, 12)
+            else -> setKakeiboListView(currentYearMonth[Constants.CURRENT_YEAR], currentYearMonth[Constants.CURRENT_MONTH] - 1)
         }
     }
 
     // next month button
     fun onNextMonthClicked() {
-        when (monthToList) {
-            12 -> setKakeiboListView(yearToList + 1, 1)
-            else -> setKakeiboListView(yearToList, monthToList + 1)
+        when (currentYearMonth[Constants.CURRENT_MONTH]) {
+            12 -> setKakeiboListView(currentYearMonth[Constants.CURRENT_YEAR + 1], 1)
+            else -> setKakeiboListView(currentYearMonth[Constants.CURRENT_YEAR], currentYearMonth[Constants.CURRENT_MONTH] + 1)
         }
     }
 
     // new entry button
-    fun onNewEntryClicked(a: Activity) {
-        if (a is FragmentToActivityInterection) {
-            a.backFragment()
-        } else {
-            throw UnsupportedOperationException("Listener is not implemented")
-        }
+    fun onNewEntryClicked() {
+        openNewEntry(mCaller)
     }
 
     // row
     override fun onItemClicked(item: KakeiboListItem) {
-        // set fragment
-        val fragment = KakeiboUpdateFragment.newInstance(item.id, item.date.year, item.date.month,
-                item.date.day, item.date.dayOfWeek, item.category, item.type, item.price, item.detail, item.termsOfPayment)
-        // move to UpdateFragment
-        if (mCaller is FragmentToActivityInterection) {
-            (mCaller as FragmentToActivityInterection).changeFragment(fragment)
-        } else {
-            throw UnsupportedOperationException("Listener is not implemented")
-        }
+        openEntryForUpdate(mCaller, item)
     }
 
-    //===
-    //=== view and value setters
-    //===
-    fun setKakeiboListView(y: Int, m: Int) {
-        // set value
-        yearToList = y
-        monthToList = m
-        // read DB
-        val cursor: Cursor? = KakeiboDBAccess().readAllKakeibo(mCaller, y, m)
-        // getKakeiboList may throw SQLiteException
-        cursor?.use {
-            // get kakeibo list
-            val (kList, totalIncome, totalExpence) = getKakeiboList(cursor, mutableListOf(), KakeiboDate(), 0, 0, 0, 0, cursor.moveToNext(), true)
-            // set recycler view
-            val listView: View = mCaller.findViewById(R.id.list) as View
-            if (listView is RecyclerView) {
-                listView.adapter = KakeiboListAdapter(kList, this)
-            }
-            // set other views
-            // total income / total expense
-            (mCaller.findViewById(R.id.tv_totalIncomeValue) as TextView).text = totalIncome.toString()
-            (mCaller.findViewById(R.id.tv_totalExpenseValue) as TextView).text = totalExpence.toString()
-            // year and month
-            (mCaller.findViewById(R.id.tv_year_list) as TextView).text = y.toString()
-            (mCaller.findViewById(R.id.tv_month_list) as TextView).text = m.toString()
-        }
-    }
-
-    //===
-    //=== callback from calendar dialog
-    //===
+    // callback from dialog
     override fun onDialogYearMonthSelected(y: Int, m: Int) {
         setKakeiboListView(y, m)
     }
 
     //===
-    //=== factory method
+    //=== view and value setter
     //===
-    companion object {
-        fun newInstance(y: Int, m: Int): KakeiboListFragment {
-            // fragment
-            val fragment = KakeiboListFragment()
-            // set year and month when "date" is tapped
-            val args = Bundle()
-            args.putInt("YEAR_TOLIST", y)
-            args.putInt("MONTH_TOLIST", m)
-            // pass arguments to fragment
-            fragment.arguments = args
-            // return fragment
-            return fragment
+    fun setKakeiboListView(y:Int, m:Int) {
+        // set value
+        currentYearMonth[Constants.CURRENT_YEAR] = y
+        currentYearMonth[Constants.CURRENT_MONTH] = m
+        // read DB
+        val cursor: Cursor? = KakeiboDBAccess().readAllKakeibo(mCaller, y, m)
+        // getKakeiboList may throw SQLiteException
+        cursor?.use {
+            // get kakeibo list
+            val (kList, totalIncome, totalExpense) = getKakeiboList(cursor, mutableListOf(), KakeiboDate(), 0, 0, 0, 0, cursor.moveToNext(), true)
+            // set recycler view
+            (mCaller.findViewById(R.id.rv_list) as RecyclerView).adapter = KakeiboListAdapter(kList, this)
+            // set other views
+            // total income / total expense
+            (mCaller.findViewById(R.id.tv_totalIncomeValue) as TextView).text = totalIncome.toString()
+            (mCaller.findViewById(R.id.tv_totalExpenseValue) as TextView).text = totalExpense.toString()
+            // year and month
+            (mCaller.findViewById(R.id.tv_year_list) as TextView).text = y.toString()
+            (mCaller.findViewById(R.id.tv_month_list) as TextView).text = m.toString()
         }
     }
 
@@ -184,8 +144,8 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     //===
     @Throws(SQLiteException::class)
     private tailrec fun getKakeiboList(c: Cursor, l: MutableList<KakeiboListItem>, previousDate: KakeiboDate, si: Int, se: Int, ti: Int, te: Int,
-                                       isContinue: Boolean, isFirst: Boolean): Triple<MutableList<KakeiboListItem>, Int, Int> {
-        if (!isContinue) {
+                                       existNext: Boolean, isFirst: Boolean): Triple<MutableList<KakeiboListItem>, Int, Int> {
+        if (!existNext) {
             // after the last entry
             if (!isFirst) {
                 // if list is not empty, set subtotal(income, expense)
@@ -220,6 +180,46 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                         c.getInt(c.getColumnIndex("termsOfPayment"))))
                 return getKakeiboList(c, l, currentDate, si + income, se + expense, ti + income, te + expense, c.moveToNext(), false)
             }
+        }
+    }
+
+    // new entry button
+    fun openNewEntry(a:Activity){
+        if (a is FragmentToActivityInterection) {
+            a.backFragment()
+        } else {
+            throw UnsupportedOperationException("Listener is not implemented")
+        }
+    }
+
+    // row
+    fun openEntryForUpdate(a:Activity, item:KakeiboListItem){
+        // set fragment
+        val fragment = KakeiboUpdateFragment.newInstance(item.id, item.date.year, item.date.month,
+                item.date.day, item.date.dayOfWeek, item.category, item.type, item.price, item.detail, item.termsOfPayment)
+        // move to UpdateFragment
+        if (a is FragmentToActivityInterection) {
+            (a as FragmentToActivityInterection).changeFragment(fragment)
+        } else {
+            throw UnsupportedOperationException("Listener is not implemented")
+        }
+    }
+
+    //===
+    //=== factory method
+    //===
+    companion object {
+        fun newInstance(y: Int, m: Int): KakeiboListFragment {
+            // fragment
+            val fragment = KakeiboListFragment()
+            // set year and month when "date" is tapped
+            val args = Bundle()
+            args.putInt("YEAR_TOLIST", y)
+            args.putInt("MONTH_TOLIST", m)
+            // pass arguments to fragment
+            fragment.arguments = args
+            // return fragment
+            return fragment
         }
     }
 }

@@ -95,6 +95,11 @@ class Constants{
         const val INPUT_TARGET = 0
         const val TERMS_OF_PAYMENT = 1
         const val TYPE = 2
+        //===
+        //=== current month
+        //===
+        const val CURRENT_YEAR = 0
+        const val CURRENT_MONTH = 1
 
 
     }
