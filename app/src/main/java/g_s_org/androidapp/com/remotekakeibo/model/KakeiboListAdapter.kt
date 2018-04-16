@@ -1,6 +1,5 @@
 package g_s_org.androidapp.com.remotekakeibo.model
 
-import android.app.Activity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +10,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
+import g_s_org.androidapp.com.remotekakeibo.common.KakeiboListItem
 
 
 class KakeiboListAdapter(private val mValues: MutableList<KakeiboListItem>, private val mListener: OnKakeiboListItemClickListener) : RecyclerView.Adapter<KakeiboListAdapter.ViewHolder>() {
@@ -18,7 +18,7 @@ class KakeiboListAdapter(private val mValues: MutableList<KakeiboListItem>, priv
     // create view holder with layout
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.fragment_kakeiboitem, parent, false)
+                .inflate(R.layout.kakeiboitem, parent, false)
         return ViewHolder(view)
     }
 
@@ -37,7 +37,7 @@ class KakeiboListAdapter(private val mValues: MutableList<KakeiboListItem>, priv
     }
     
     // set values to view holder as header
-    private fun setHeader(holder:ViewHolder, item:KakeiboListItem) {
+    private fun setHeader(holder:ViewHolder, item: KakeiboListItem) {
         // display header layout
         holder.headerLayout.visibility=View.VISIBLE
         // hide data layout
@@ -53,7 +53,7 @@ class KakeiboListAdapter(private val mValues: MutableList<KakeiboListItem>, priv
     }
 
     // set values and listener to view holder as data row
-    private fun setData(holder:ViewHolder, item:KakeiboListItem){
+    private fun setData(holder:ViewHolder, item: KakeiboListItem){
         // hide header
         holder.headerLayout.visibility = View.GONE
         // display data

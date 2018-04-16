@@ -11,10 +11,6 @@ import java.util.*
 //===
 //=== get priceString of priceStack
 //===
-
-// 4/3作り直し
-// 再帰を使って書き直したい
-
 fun Deque<Char>.getPrice(): String {
     // string builder
     val priceString = StringBuilder()
@@ -38,10 +34,6 @@ fun Deque<Char>.getPrice(): String {
 //===
 //=== store price to stack
 //===
-
-// 4/3作り直し
-// 再帰を使って書き直したい
-
 fun Deque<Char>.setPrice(price: Int) {
     // change price to type array of char
     val priceArray = price.toString().toCharArray()

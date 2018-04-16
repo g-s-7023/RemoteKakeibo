@@ -119,13 +119,11 @@
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/rv_list"
-        android:name="g_s_org.androidapp.com.remotekakeibo.view.KakeiboListFragment"
+        android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_below="@id/ll_total"
+        android:layout_toLeftOf="@id/line_horizontal"
         app:layoutManager="LinearLayoutManager"
-        tools:context="g_s_org.androidapp.com.remotekakeibo.view.KakeiboListFragment"
-        tools:listitem="@layout/fragment_kakeiboitem" />
+        tools:listitem="@layout/kakeiboitem" />
 </RelativeLayout>

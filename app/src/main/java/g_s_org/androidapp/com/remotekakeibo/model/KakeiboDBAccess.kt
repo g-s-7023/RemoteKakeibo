@@ -36,7 +36,7 @@ class KakeiboDBAccess {
         }
     }
 
-    fun readAllKakeibo(a: Activity, year: Int, month: Int):Cursor? {
+    fun readAllKakeibo(a: Activity, year: Int, month: Int): Cursor? {
         // create helper
         val helper = DBAccessHelper(a)
         // DB
@@ -48,11 +48,11 @@ class KakeiboDBAccess {
             db = helper.readableDatabase
             // データ取得
             cursor = db.query(DBAccessHelper.TABLE_NAME,
-                    arrayOf("id", "year", "month", "day", "dayOfWeek", "category", "type", "price", "detail", "termsOfPayment"),
+                    arrayOf("_id", "year", "month", "day", "dayOfWeek", "category", "type", "price", "detail", "termsOfPayment"),
                     "year = ? AND month = ?",
                     arrayOf(Integer.toString(year), Integer.toString(month)),
                     null, null, "day ASC")
-        }catch (e:Exception){
+        } catch (e: Exception) {
             throw e
         } finally {
             return cursor

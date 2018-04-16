@@ -1,6 +1,5 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
-import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.os.Bundle
@@ -12,13 +11,11 @@ import android.view.ViewGroup
 import android.widget.*
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.MAXDIGITS
-import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.sdf
-import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDate
+import g_s_org.androidapp.com.remotekakeibo.common.KakeiboDate
 import g_s_org.androidapp.com.remotekakeibo.dbaccess.DetailHistoryAccess
 import g_s_org.androidapp.com.remotekakeibo.model.getPrice
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.model.setPrice
-import java.text.SimpleDateFormat
 
 import java.util.*
 
@@ -319,7 +316,7 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         return category.isNotBlank()
     }
     // get contentValues to save
-    fun getContentValues(cat:String, det:String, date:KakeiboDate, price: Deque<Char>, con: Array<Int>): ContentValues {
+    fun getContentValues(cat:String, det:String, date: KakeiboDate, price: Deque<Char>, con: Array<Int>): ContentValues {
         // contentValues to return
         val cv = ContentValues()
         // set value of category

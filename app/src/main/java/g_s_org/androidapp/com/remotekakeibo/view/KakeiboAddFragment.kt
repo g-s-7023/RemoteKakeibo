@@ -80,7 +80,7 @@ class KakeiboAddFragment : KakeiboInputFragment() {
     //===
     //=== business logic
     //===
-    private fun changePage(a: Activity, y:Int, m:Int){
+    fun changePage(a: Activity, y:Int, m:Int){
         // fragment to replace for
         val toFragment = KakeiboListFragment.newInstance(y, m)
         // change page
@@ -91,7 +91,7 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         }
     }
 
-    private fun saveData(a:Activity, cv:ContentValues, d:String){
+    fun saveData(a:Activity, cv:ContentValues, d:String){
         // insert to DB
         KakeiboDBAccess().execWrite(a){ db:SQLiteDatabase->
             db.insert(DBAccessHelper.TABLE_NAME, null, cv)

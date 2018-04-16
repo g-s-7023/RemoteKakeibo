@@ -17,8 +17,9 @@ import android.widget.TextView
 
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
+import g_s_org.androidapp.com.remotekakeibo.common.KakeiboDate
+import g_s_org.androidapp.com.remotekakeibo.common.KakeiboListItem
 import g_s_org.androidapp.com.remotekakeibo.model.*
-import org.w3c.dom.Text
 import java.util.*
 
 
@@ -51,7 +52,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     //=== initialize values
     //===
     fun initValues() {
-        if (arguments != null && arguments.containsKey("LISTED_YEAR") && arguments.containsKey("LISTED_MONTH")) {
+        if (arguments != null && arguments.containsKey("YEAR_TOLIST") && arguments.containsKey("MONTH_TOLIST")) {
             setKakeiboListView(arguments.getInt("YEAR_TOLIST"), arguments.getInt("MONTH_TOLIST"))
         } else {
             val cal = Calendar.getInstance()
@@ -123,12 +124,17 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         currentYearMonth[Constants.CURRENT_MONTH] = m
         // read DB
         val cursor: Cursor? = KakeiboDBAccess().readAllKakeibo(mCaller, y, m)
+
+
+        // リストの表示が変
+
+
         // getKakeiboList may throw SQLiteException
         cursor?.use {
             // get kakeibo list
             val (kList, totalIncome, totalExpense) = getKakeiboList(cursor, mutableListOf(), KakeiboDate(), 0, 0, 0, 0, cursor.moveToNext(), true)
             // set recycler view
-            (mCaller.findViewById(R.id.rv_list) as RecyclerView).adapter = KakeiboListAdapter(kList, this)
+            (mCaller.findViewById(R.id.list) as RecyclerView).adapter = KakeiboListAdapter(kList, this)
             // set other views
             // total income / total expense
             (mCaller.findViewById(R.id.tv_totalIncomeValue) as TextView).text = totalIncome.toString()
@@ -171,7 +177,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 val price = c.getInt(c.getColumnIndex("price"))
                 val income = if (type == Constants.INCOME) price else 0
                 val expense = if (type == Constants.EXPENSE) price else 0
-                l.add(KakeiboListItem(c.getInt(c.getColumnIndex("id")),
+                l.add(KakeiboListItem(c.getInt(c.getColumnIndex("_id")),
                         currentDate,
                         c.getString(c.getColumnIndex("category")),
                         type,
@@ -193,7 +199,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
 
     // row
-    fun openEntryForUpdate(a:Activity, item:KakeiboListItem){
+    fun openEntryForUpdate(a:Activity, item: KakeiboListItem){
         // set fragment
         val fragment = KakeiboUpdateFragment.newInstance(item.id, item.date.year, item.date.month,
                 item.date.day, item.date.dayOfWeek, item.category, item.type, item.price, item.detail, item.termsOfPayment)
