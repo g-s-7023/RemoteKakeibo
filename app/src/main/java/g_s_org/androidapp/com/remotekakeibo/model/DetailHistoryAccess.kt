@@ -29,6 +29,9 @@ class DetailHistoryAccess() {
         }
         editor.commit()
     }
+    private fun getKey(input:String):Int{
+
+    }
     // insert new value to destination array
     private tailrec fun insertPreference(src: SharedPreferences, dst: Array<String>, dstIndex: Int, keys: Array<String>, keyIndex: Int, input: String): Array<String> {
         when (dstIndex) {

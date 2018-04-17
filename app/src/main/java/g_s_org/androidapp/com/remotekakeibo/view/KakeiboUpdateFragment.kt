@@ -40,6 +40,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
         // set button name
         (mCaller.findViewById(R.id.bt_left) as Button).text = getString(R.string.bt_delete)
         (mCaller.findViewById(R.id.bt_right) as Button).text = getString(R.string.bt_cancel)
+        (mCaller.findViewById(R.id.bt_right) as Button).textSize = resources.getDimension(R.dimen.text_mini)
         (mCaller.findViewById(R.id.bt_center) as Button).text = getString(R.string.bt_update)
         // date
         setDate(arguments.getInt("SELECTED_YEAR"),
@@ -77,8 +78,8 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
         pageBack(mCaller)
     }
 
-    // cancel button
-    override fun onRightButtonClicked() {
+    // update button
+    override fun onCenterButtonClicked() {
         // contentValues to update
         val cv = getContentValues((mCaller.findViewById(R.id.et_category) as EditText).text.toString(),
                 (mCaller.findViewById(R.id.et_detail) as EditText).text.toString(),
@@ -89,11 +90,13 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
         pageBack(mCaller)
     }
 
-    // update button
-    override fun onCenterButtonClicked() {
+    // cancel button
+    override fun onRightButtonClicked() {
         // back to list
         pageBack(mCaller)
+
     }
+
     //===
     //=== business logic
     //===

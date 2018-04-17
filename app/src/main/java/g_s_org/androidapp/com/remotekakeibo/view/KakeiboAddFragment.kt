@@ -26,6 +26,7 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         initValues()
         setListeners()
     }
+
     //===
     //=== initialize view and values
     //===
@@ -38,7 +39,7 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         resetValues()
     }
 
-    private fun resetValues(){
+    private fun resetValues() {
         // price (set 0)
         clearPrice()
         // clear text in category textbox
@@ -56,17 +57,22 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         // set center button invisible
         (mCaller.findViewById(R.id.bt_center) as Button).visibility = View.INVISIBLE
     }
+
     //===
     //=== listeners
     //===
     // save button
     override fun onLeftButtonClicked() {
-        // contentValues to insert
-        val cv = getContentValues((mCaller.findViewById(R.id.et_category) as EditText).text.toString(),
-                (mCaller.findViewById(R.id.et_detail) as EditText).text.toString(),
-                selectedDate, priceStack, condition)
-        // insert
-        saveData(mCaller, cv, (mCaller.findViewById(R.id.et_detail) as EditText).text.toString())
+        val category = (mCaller.findViewById(g_s_org.androidapp.com.remotekakeibo.R.id.et_category) as EditText).text.toString()
+        // check input
+        if (checkInput(category)) {
+            // contentValues to insert
+            val cv = getContentValues(category,
+                    (mCaller.findViewById(R.id.et_detail) as EditText).text.toString(),
+                    selectedDate, priceStack, condition)
+            // insert
+            saveData(mCaller, cv, (mCaller.findViewById(R.id.et_detail) as EditText).text.toString())
+        }
     }
 
     // list button
@@ -80,20 +86,20 @@ class KakeiboAddFragment : KakeiboInputFragment() {
     //===
     //=== business logic
     //===
-    fun changePage(a: Activity, y:Int, m:Int){
+    fun changePage(a: Activity, y: Int, m: Int) {
         // fragment to replace for
         val toFragment = KakeiboListFragment.newInstance(y, m)
         // change page
-        if (a is FragmentToActivityInterection){
+        if (a is FragmentToActivityInterection) {
             a.changeFragment(toFragment)
         } else {
             throw UnsupportedOperationException("Listener is not implemented")
         }
     }
 
-    fun saveData(a:Activity, cv:ContentValues, d:String){
+    fun saveData(a: Activity, cv: ContentValues, d: String) {
         // insert to DB
-        KakeiboDBAccess().execWrite(a){ db:SQLiteDatabase->
+        KakeiboDBAccess().execWrite(a) { db: SQLiteDatabase ->
             db.insert(DBAccessHelper.TABLE_NAME, null, cv)
         }
         // save detail to preference

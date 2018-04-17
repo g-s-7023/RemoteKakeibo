@@ -27,14 +27,14 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     // selected year, month, and day
     protected var selectedDate: KakeiboDate = KakeiboDate()
     // condition
-    protected var condition = Array<Int>(3, {-1})
+    protected var condition = Array<Int>(3, { -1 })
 
     //===
     //=== callback from lifecycle
     //===
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is FragmentActivity){
+        if (context is FragmentActivity) {
             mCaller = context
         } else {
             throw UnsupportedOperationException("caller should be Fragment Activity")
@@ -213,7 +213,7 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         (mCaller.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()
     }
 
-    fun setPrice(p:Int){
+    fun setPrice(p: Int) {
         priceStack.setPrice(p)
         (mCaller.findViewById(R.id.tv_priceValue) as TextView).text = priceStack.getPrice()
     }
@@ -226,7 +226,8 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         (mCaller.findViewById(R.id.tv_monthAndDay) as TextView).text = getString(R.string.show_monthday, m, d)
         (mCaller.findViewById(R.id.tv_dayOfWeek) as TextView).text = getString(R.string.show_dayofweek, Constants.WEEKNAME[selectedDate.dayOfWeek - 1])
     }
-    fun setToday(){
+
+    fun setToday() {
         // set year, month, day of today
         selectedDate.setDate(Calendar.getInstance())
         // show
@@ -244,6 +245,7 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         (mCaller.findViewById(R.id.et_detail) as EditText)
                 .setSelection((mCaller.findViewById(R.id.et_detail) as EditText).text.toString().length)
     }
+
     // set detail's value to which is selected from list
     fun setDetailFromList(d: String) {
         // update detail textbox(stay focus)
@@ -252,24 +254,26 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         (mCaller.findViewById(R.id.et_detail) as EditText)
                 .setSelection((mCaller.findViewById(R.id.et_detail) as EditText).text.toString().length)
     }
-    fun setCategory(){
+
+    fun setCategory() {
         // set back ground of detail textbox "unselected"
         (mCaller.findViewById(R.id.et_detail) as EditText).setBackgroundResource(R.drawable.categoryanddetail_noselected)
         // set back ground of category textbox "selected"
         (mCaller.findViewById(R.id.et_category) as EditText).setBackgroundResource(R.drawable.categoryanddetail_selected)
         // set adapter to ListView
-        (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter=
+        (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter =
                 ArrayAdapter<String>(mCaller, android.R.layout.simple_list_item_1, resources.getStringArray(R.array.lv_category_and_detail))
         // set input target value
         condition[Constants.INPUT_TARGET] = Constants.CATEGORY
     }
-    fun setDetail(){
+
+    fun setDetail() {
         // set back ground of detail textbox "selected"
         (mCaller.findViewById(R.id.et_detail) as EditText).setBackgroundResource(R.drawable.categoryanddetail_selected)
         // set back ground of category textbox "unselected"
         (mCaller.findViewById(R.id.et_category) as EditText).setBackgroundResource(R.drawable.categoryanddetail_noselected)
         // set adapter to ListView
-        (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter=
+        (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter =
                 ArrayAdapter<String>(mCaller, android.R.layout.simple_list_item_1, DetailHistoryAccess().getPreference(mCaller))
         // set input target value
         condition[Constants.INPUT_TARGET] = Constants.DETAIL
@@ -283,6 +287,7 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         // set termsOfPayment
         condition[Constants.TERMS_OF_PAYMENT] = Constants.CARD
     }
+
     fun setCash() {
         // change background color of card textview to "selected"
         (mCaller.findViewById(R.id.tv_cash) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
@@ -291,6 +296,7 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         // set termsOfPayment
         condition[Constants.TERMS_OF_PAYMENT] = Constants.CASH
     }
+
     fun setIncome() {
         // change background color of card textview to "unselected"
         (mCaller.findViewById(R.id.tv_expense) as TextView).setBackgroundResource(R.drawable.termsandtype_noselected)
@@ -299,6 +305,7 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         // set termsOfPayment
         condition[Constants.TYPE] = Constants.INCOME
     }
+
     fun setExpense() {
         // change background color of card textview to "selected"
         (mCaller.findViewById(R.id.tv_expense) as TextView).setBackgroundResource(R.drawable.termsandtype_selected)
@@ -307,16 +314,18 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
         // set termsOfPayment
         condition[Constants.TYPE] = Constants.EXPENSE
     }
+
     //===
     //=== business logic
     //===
     // validation
-    fun checkInput(category:String): Boolean {
+    fun checkInput(category: String): Boolean {
         // check value of category
         return category.isNotBlank()
     }
+
     // get contentValues to save
-    fun getContentValues(cat:String, det:String, date: KakeiboDate, price: Deque<Char>, con: Array<Int>): ContentValues {
+    fun getContentValues(cat: String, det: String, date: KakeiboDate, price: Deque<Char>, con: Array<Int>): ContentValues {
         // contentValues to return
         val cv = ContentValues()
         // set value of category

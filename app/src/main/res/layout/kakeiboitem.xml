@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
     <!-- header -->
     <RelativeLayout
         android:id="@+id/rl_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="#696969">
+        android:layout_alignParentTop="true">
         <TextView
             android:id="@+id/tv_listDate"
             android:layout_width="wrap_content"
@@ -30,17 +29,18 @@
     <LinearLayout
         android:id="@+id/ll_image"
         android:layout_width="50dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/rl_header"
         android:layout_above="@+id/ll_dummy"
+        android:background="#ffffff"
         android:orientation="horizontal">
         <ImageView
             android:id="@+id/iv_listType"
             android:src="@drawable/in"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitXY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
             android:contentDescription="@id/iv_listType"/>
     </LinearLayout>
     <LinearLayout
