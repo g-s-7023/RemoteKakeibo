@@ -30,7 +30,7 @@ class CalendarDialogFragment : DialogFragment(), DatePickerDialog.OnDateSetListe
         super.onAttach(context as Context)
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // year and month when dialog is shown first
         val originalYear = arguments.getInt("ORIGINAL_YEAR", Constants.DEFAULT_YEAR)
         val originalMonth = arguments.getInt("ORIGINAL_MONTH", 1)
@@ -38,7 +38,7 @@ class CalendarDialogFragment : DialogFragment(), DatePickerDialog.OnDateSetListe
         // create dialog
         val dialog = DatePickerDialog(mCaller, this, originalYear, originalMonth, originalDay)
         // set positive button invisible
-        dialog.getButton(DialogInterface.BUTTON_POSITIVE).visibility = GONE
+//        dialog.getButton(DialogInterface.BUTTON_POSITIVE).visibility = GONE
         return dialog
     }
 

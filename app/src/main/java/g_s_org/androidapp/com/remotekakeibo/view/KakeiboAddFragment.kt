@@ -63,15 +63,14 @@ class KakeiboAddFragment : KakeiboInputFragment() {
     //===
     // save button
     override fun onLeftButtonClicked() {
-        val category = (mCaller.findViewById(g_s_org.androidapp.com.remotekakeibo.R.id.et_category) as EditText).text.toString()
-        // check input
-        if (checkInput(category)) {
+        val category = (mCaller.findViewById(R.id.et_category) as EditText).text.toString()
+        val detail = (mCaller.findViewById(R.id.et_detail) as EditText).text.toString()
+        // if category is empty, no data is saved
+        if (category.isNotBlank()) {
             // contentValues to insert
-            val cv = getContentValues(category,
-                    (mCaller.findViewById(R.id.et_detail) as EditText).text.toString(),
-                    selectedDate, priceStack, condition)
+            val cv = getContentValues(category, detail, selectedDate, priceStack, condition)
             // insert
-            saveData(mCaller, cv, (mCaller.findViewById(R.id.et_detail) as EditText).text.toString())
+            saveData(mCaller, cv, detail)
         }
     }
 
@@ -97,13 +96,15 @@ class KakeiboAddFragment : KakeiboInputFragment() {
         }
     }
 
-    fun saveData(a: Activity, cv: ContentValues, d: String) {
+    fun saveData(a: Activity, cv: ContentValues, d:String) {
         // insert to DB
         KakeiboDBAccess().execWrite(a) { db: SQLiteDatabase ->
             db.insert(DBAccessHelper.TABLE_NAME, null, cv)
         }
         // save detail to preference
-        DetailHistoryAccess().savePreference(d, a)
+        if (d.isNotBlank()) {
+            DetailHistoryAccess().savePreference(d, mCaller)
+        }
         // initialize values(except date)
         resetValues()
     }

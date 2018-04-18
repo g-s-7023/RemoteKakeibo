@@ -21,13 +21,6 @@ class DetailHistoryAccess() {
         // delete one entry and add new input value
         newPrefValues.removeAt(deletePosition)
         newPrefValues.add(0, input)
-
-        /*
-        // length of preferences
-        val pLength = prefKeys.size
-        // values to be stored (with new value inserted)
-        val newPrefValues = insertPreference(prefs, Array(pLength, { "" }), pLength - 1, prefKeys, pLength - 1, input)
-        */
         // store new values to preference
         val editor = prefs.edit()
         for ((i, key) in prefKeys.withIndex()) {

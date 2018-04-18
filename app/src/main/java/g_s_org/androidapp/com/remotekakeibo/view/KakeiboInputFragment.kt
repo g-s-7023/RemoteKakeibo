@@ -318,12 +318,6 @@ abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDial
     //===
     //=== business logic
     //===
-    // validation
-    fun checkInput(category: String): Boolean {
-        // check value of category
-        return category.isNotBlank()
-    }
-
     // get contentValues to save
     fun getContentValues(cat: String, det: String, date: KakeiboDate, price: Deque<Char>, con: Array<Int>): ContentValues {
         // contentValues to return
