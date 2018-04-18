@@ -19,7 +19,7 @@ import g_s_org.androidapp.com.remotekakeibo.model.setPrice
 
 import java.util.*
 
-abstract class KakeiboInputFragment : Fragment(), _CalendarDialogFragment.OnDialogInteractionListener {
+abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialogInteractionListener {
     // caller of this activity
     protected lateinit var mCaller: FragmentActivity
     // buffer of input price
