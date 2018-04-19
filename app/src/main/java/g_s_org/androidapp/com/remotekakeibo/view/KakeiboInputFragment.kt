@@ -222,7 +222,7 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
         // set year, month ,day
         selectedDate.setDate(y, m, d)
         // show
-        (mCaller.findViewById(R.id.tv_year) as TextView).text = getString(R.string.show_year, y)
+        (mCaller.findViewById(R.id.tv_year) as TextView).text = y.toString()
         (mCaller.findViewById(R.id.tv_monthAndDay) as TextView).text = getString(R.string.show_monthday, m, d)
         (mCaller.findViewById(R.id.tv_dayOfWeek) as TextView).text = getString(R.string.show_dayofweek, Constants.WEEKNAME[selectedDate.dayOfWeek - 1])
     }
@@ -231,7 +231,7 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
         // set year, month, day of today
         selectedDate.setDate(Calendar.getInstance())
         // show
-        (mCaller.findViewById(R.id.tv_year) as TextView).text = getString(R.string.show_year, selectedDate.year)
+        (mCaller.findViewById(R.id.tv_year) as TextView).text = selectedDate.year.toString()
         (mCaller.findViewById(R.id.tv_monthAndDay) as TextView).text = getString(R.string.show_monthday, selectedDate.month, selectedDate.day)
         (mCaller.findViewById(R.id.tv_dayOfWeek) as TextView).text = getString(R.string.show_dayofweek, Constants.WEEKNAME[selectedDate.dayOfWeek - 1])
     }

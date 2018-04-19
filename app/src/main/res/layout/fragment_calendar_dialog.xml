@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!-- 前月ボタン -->
+    <!-- "previous month" button -->
     <Button
         android:id="@+id/bt_previous_calendar"
         android:layout_width="wrap_content"
@@ -15,7 +15,7 @@
         android:textSize="@dimen/text_medium"
         android:textColor="@color/white"
         android:background="@drawable/buttons"/>
-    <!-- 年月 -->
+    <!-- year and month -->
     <TextView
         android:id="@+id/tv_yearAndMonth_calendar"
         android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/noborder"/>
-    <!-- 翌月ボタン -->
+    <!-- "next month" button-->
     <Button
         android:id="@+id/bt_next_calendar"
         android:layout_width="wrap_content"
@@ -38,7 +38,7 @@
         android:textSize="@dimen/text_medium"
         android:textColor="@color/white"
         android:background="@drawable/buttons"/>
-    <!-- 日にち -->
+    <!-- calendar -->
     <TableLayout
         android:id="@+id/tl_days"
         android:layout_width="match_parent"
@@ -46,7 +46,7 @@
         android:layout_below="@id/bt_previous_calendar"
         android:layout_marginTop="3dp"
         android:stretchColumns="0,1,2,3,4,5,6">
-        <!-- 曜日 -->
+        <!-- day of week -->
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -115,7 +115,7 @@
                 android:gravity="center"
                 android:background="@drawable/noborder" />
         </TableRow>
-        <!-- 1週目 -->
+        <!-- 1st week -->
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -177,7 +177,7 @@
                 android:gravity="center"
                 android:background="@drawable/buttons" />
         </TableRow>
-        <!-- 2週目 -->
+        <!-- 2nd week -->
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -239,7 +239,7 @@
                 android:gravity="center"
                 android:background="@drawable/buttons" />
         </TableRow>
-        <!-- 3週目 -->
+        <!-- 3rd week -->
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -301,7 +301,7 @@
                 android:gravity="center"
                 android:background="@drawable/buttons" />
         </TableRow>
-        <!-- 4週目 -->
+        <!-- 4th week -->
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -363,7 +363,7 @@
                 android:gravity="center"
                 android:background="@drawable/buttons" />
         </TableRow>
-        <!-- 5週目 -->
+        <!-- 5th week -->
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -425,7 +425,7 @@
                 android:gravity="center"
                 android:background="@drawable/buttons" />
         </TableRow>
-        <!-- 6週目 -->
+        <!-- 6th week -->
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="0dp"

@@ -29,7 +29,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is FragmentActivity){
+        if (context is FragmentActivity) {
             mCaller = context
         } else {
             throw UnsupportedOperationException("caller should be Fragment Activity")
@@ -118,17 +118,12 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     //===
     //=== view and value setter
     //===
-    fun setKakeiboListView(y:Int, m:Int) {
+    fun setKakeiboListView(y: Int, m: Int) {
         // set value
         currentYearMonth[Constants.CURRENT_YEAR] = y
         currentYearMonth[Constants.CURRENT_MONTH] = m
         // read DB
         val cursor: Cursor? = KakeiboDBAccess().readAllKakeibo(mCaller, y, m)
-
-
-        // リストの表示が変
-
-
         // getKakeiboList may throw SQLiteException
         cursor?.use {
             // get kakeibo list
@@ -158,7 +153,8 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 l.add(KakeiboListItem(true, previousDate, si, se))
             }
             // change the order to Descendant
-            return Triple(l.reversed() as MutableList<KakeiboListItem>, ti, te)
+            l.reverse()
+            return Triple(l, ti, te)
         }
         // set current date
         val currentDate = KakeiboDate(c.getInt(c.getColumnIndex("year")),
@@ -190,7 +186,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
 
     // new entry button
-    fun openNewEntry(a:Activity){
+    fun openNewEntry(a: Activity) {
         if (a is FragmentToActivityInterection) {
             a.backFragment()
         } else {
@@ -199,7 +195,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
 
     // row
-    fun openEntryForUpdate(a:Activity, item: KakeiboListItem){
+    fun openEntryForUpdate(a: Activity, item: KakeiboListItem) {
         // set fragment
         val fragment = KakeiboUpdateFragment.newInstance(item.id, item.date.year, item.date.month,
                 item.date.day, item.date.dayOfWeek, item.category, item.type, item.price, item.detail, item.termsOfPayment)

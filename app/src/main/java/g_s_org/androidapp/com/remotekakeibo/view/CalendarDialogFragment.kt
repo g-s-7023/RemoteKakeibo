@@ -39,7 +39,7 @@ class CalendarDialogFragment : DialogFragment() {
         super.onAttach(context as Context)
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // initialize values
         initValues()
         // create view to display in dialog
@@ -75,13 +75,12 @@ class CalendarDialogFragment : DialogFragment() {
         // set listener to previous month button and next month button
         (view.findViewById(R.id.bt_previous_calendar) as Button).setOnClickListener { onPreviousMonthClicked(view) }
         (view.findViewById(R.id.bt_next_calendar) as Button).setOnClickListener { onNextMonthClicked(view) }
-        // calendar table to display
-        val tl = view.findViewById(R.id.tl_days) as TableLayout
         // get first day of the month
         val firstDay = Calendar.getInstance()
         firstDay.set(year, month, 1)
         // fill the calendar with days
-        setMonth(tl, 0, 1, firstDay.get(Calendar.DAY_OF_WEEK), firstDay.getActualMaximum(Calendar.DAY_OF_MONTH))
+        setMonth(view.findViewById(R.id.tl_days) as TableLayout, 1, 1,
+                firstDay.get(Calendar.DAY_OF_WEEK), firstDay.getActualMaximum(Calendar.DAY_OF_MONTH))
     }
 
     //===
@@ -143,7 +142,7 @@ class CalendarDialogFragment : DialogFragment() {
             (weekOfMonth >= tl.childCount) -> {
                 return
             }
-            (weekOfMonth == 0) -> {
+            (weekOfMonth == 1) -> {
                 // first week of month
                 setWeek(tl.getChildAt(weekOfMonth) as TableRow, 0, day, firstDayOfWeek - 1, lastDay)
                 return setMonth(tl, weekOfMonth + 1, day + Constants.DAYS_OF_WEEK - firstDayOfWeek + 1, 0, lastDay)
@@ -162,7 +161,7 @@ class CalendarDialogFragment : DialogFragment() {
                 return
             }
             (col < firstCol || day > lastDay) -> {
-                // fill empty before the first day or after the last day
+                // fill empty cell before the first day or after the last day
                 setEmpty(tr.getChildAt(col) as TextView)
                 return setWeek(tr, col + 1, day, firstCol, lastDay)
             }
@@ -190,8 +189,6 @@ class CalendarDialogFragment : DialogFragment() {
         t.setOnClickListener(null)
         t.setBackgroundResource(R.drawable.buttons)
     }
-
-
 
     //===
     //=== factory method

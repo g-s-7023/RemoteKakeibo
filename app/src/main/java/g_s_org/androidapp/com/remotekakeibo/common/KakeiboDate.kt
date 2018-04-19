@@ -9,7 +9,7 @@ class KakeiboDate(var year:Int = 1900, var month:Int = 1, var day:Int = 1, var d
     // set value from calendar
     fun setDate(cal:Calendar){
         year = cal.get(Calendar.YEAR)
-        month = cal.get(Calendar.MONTH)
+        month = cal.get(Calendar.MONTH) + 1
         day = cal.get(Calendar.DAY_OF_MONTH)
         dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
     }
