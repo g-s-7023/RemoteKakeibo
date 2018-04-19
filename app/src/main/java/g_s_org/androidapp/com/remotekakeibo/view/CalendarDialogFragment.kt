@@ -17,22 +17,16 @@ import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import java.util.*
 
 
-// view for show calendar dialog
-// this is replaced for standard DatePickerDialog
-
-
 class CalendarDialogFragment : DialogFragment() {
     // activity which call this fragment
     lateinit var mCaller: Activity
-    // listener
-    lateinit var mListener: OnDialogInteractionListener
     // date when dialog is shown
-    var originalYear = Constants.DEFAULT_YEAR
-    var originalMonth = 1
-    var originalDay = 1
+    private var originalYear = Constants.DEFAULT_YEAR
+    private var originalMonth = 1
+    private var originalDay = 1
     // current selected month
-    var currentYear = Constants.DEFAULT_YEAR
-    var currentMonth = 1
+    private var currentYear = Constants.DEFAULT_YEAR
+    private var currentMonth = 1
 
     override fun onAttach(context: Context?) {
         mCaller = context as Activity

@@ -1,5 +1,7 @@
 package g_s_org.androidapp.com.remotekakeibo.model
 
+import android.content.Context
+import android.content.res.Resources
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +15,8 @@ import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.KakeiboListItem
 
 
-class KakeiboListAdapter(private val mValues: MutableList<KakeiboListItem>, private val mListener: OnKakeiboListItemClickListener) : RecyclerView.Adapter<KakeiboListAdapter.ViewHolder>() {
+class KakeiboListAdapter(private val mValues: MutableList<KakeiboListItem>, private val mListener: OnKakeiboListItemClickListener,
+                         private val mContext: Context) : RecyclerView.Adapter<KakeiboListAdapter.ViewHolder>() {
 
     // create view holder with layout
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,10 +49,16 @@ class KakeiboListAdapter(private val mValues: MutableList<KakeiboListItem>, priv
         holder.priceLayout.visibility=View.GONE
         // set date
         holder.date.text = item.date.toString()
-        // set income of the day
-        holder.subtotalIncome.text = item.subtotalIncome.toString()
+        // set income and expense of the day
+        holder.subtotalIncome.text = when(item.subtotalIncome) {
+            0 -> ""
+            else -> mContext.getString(R.string.show_subtotal_income, item.subtotalIncome)
+        }
         // set expense of the day
-        holder.subtotalExpense.text = item.subtotalExpense.toString()
+        holder.subtotalExpense.text = when(item.subtotalExpense){
+            0 -> ""
+            else -> mContext.getString(R.string.show_subtotal_expense, item.subtotalExpense)
+        }
     }
 
     // set values and listener to view holder as data row

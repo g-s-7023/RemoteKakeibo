@@ -129,7 +129,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
             // get kakeibo list
             val (kList, totalIncome, totalExpense) = getKakeiboList(cursor, mutableListOf(), KakeiboDate(), 0, 0, 0, 0, cursor.moveToNext(), true)
             // set recycler view
-            (mCaller.findViewById(R.id.list) as RecyclerView).adapter = KakeiboListAdapter(kList, this)
+            (mCaller.findViewById(R.id.list) as RecyclerView).adapter = KakeiboListAdapter(kList, this, mCaller)
             // set other views
             // total income / total expense
             (mCaller.findViewById(R.id.tv_totalIncomeValue) as TextView).text = totalIncome.toString()

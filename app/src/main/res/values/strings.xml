@@ -54,6 +54,8 @@
     <string name="show_yearandmonth">%1$d年%2$d月</string>
     <string name="show_monthday">%1$d/%2$d</string>
     <string name="show_dayofweek">(%1$s)</string>
+    <string name="show_subtotal_income">収入：%1$d</string>
+    <string name="show_subtotal_expense">"  支出：%1$d"</string>
 
     <!-- title -->
     <string name="title_yearandmonth">年月選択</string>
@@ -71,6 +73,4 @@
         <item>その他</item>
     </string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
