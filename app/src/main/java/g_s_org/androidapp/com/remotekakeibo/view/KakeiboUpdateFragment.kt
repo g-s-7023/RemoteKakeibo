@@ -101,16 +101,23 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     //=== business logic
     //===
     fun deleteData(a: FragmentActivity, id:Int) {
+        // delete entry
+        KakeiboDBAccess().deleteKakeibo(a, id)
+        /*
         KakeiboDBAccess().execWrite(a) { db: SQLiteDatabase ->
             db.delete(DBAccessHelper.TABLE_NAME, "_id = ?", arrayOf(id.toString()))
         }
+        */
     }
 
     fun updateData(a: FragmentActivity, id:Int, cv: ContentValues) {
         // update DB
+        KakeiboDBAccess().updateKakeibo(a, id, cv)
+        /*
         KakeiboDBAccess().execWrite(a) { db: SQLiteDatabase ->
             db.update(DBAccessHelper.TABLE_NAME, cv, "_id = ?", arrayOf(id.toString()))
         }
+        */
     }
 
     fun pageBack(a: FragmentActivity) {

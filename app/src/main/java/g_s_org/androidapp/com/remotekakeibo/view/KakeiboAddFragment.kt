@@ -98,9 +98,12 @@ class KakeiboAddFragment : KakeiboInputFragment() {
 
     fun saveData(a: Activity, cv: ContentValues, d:String) {
         // insert to DB
+        KakeiboDBAccess().insertKakeibo(a, cv)
+        /*
         KakeiboDBAccess().execWrite(a) { db: SQLiteDatabase ->
             db.insert(DBAccessHelper.TABLE_NAME, null, cv)
         }
+        */
         // save detail to preference
         if (d.isNotBlank()) {
             DetailHistoryAccess().savePreference(d, mCaller)

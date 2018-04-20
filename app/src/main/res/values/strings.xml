@@ -29,7 +29,7 @@
     <string name="bt_new">新規</string>
     <string name="bt_ok">OK</string>
     <string name="bt_cancel">Cancel</string>
-
+    <string name="bt_sync">同期</string>
     <string name="bt_nextmonth">↑翌月</string>
     <string name="bt_previousmonth">↓先月</string>
     <string name="bt_nextmonth_calendar">翌月→</string>

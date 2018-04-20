@@ -3,6 +3,7 @@ package g_s_org.androidapp.com.remotekakeibo.view
 import android.app.Activity
 import android.content.Context
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -105,6 +106,12 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         openNewEntry(mCaller)
     }
 
+    // sync button
+    fun onSyncClicked() {
+        syncKakeibo(mCaller)
+    }
+
+
     // row
     override fun onItemClicked(item: KakeiboListItem) {
         openEntryForUpdate(mCaller, item)
@@ -123,7 +130,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         currentYearMonth[Constants.CURRENT_YEAR] = y
         currentYearMonth[Constants.CURRENT_MONTH] = m
         // read DB
-        val cursor: Cursor? = KakeiboDBAccess().readAllKakeibo(mCaller, y, m)
+        val cursor: Cursor? = KakeiboDBAccess().readKakeiboOfMonth(mCaller, y, m)
         // getKakeiboList may throw SQLiteException
         cursor?.use {
             // get kakeibo list
@@ -151,16 +158,14 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
             if (!isFirst) {
                 // if list is not empty, set subtotal(income, expense)
                 l.add(KakeiboListItem(true, previousDate, si, se))
+                // change the order to Descendant
+                l.reverse()
             }
-            // change the order to Descendant
-            l.reverse()
             return Triple(l, ti, te)
         }
         // set current date
-        val currentDate = KakeiboDate(c.getInt(c.getColumnIndex("year")),
-                c.getInt(c.getColumnIndex("month")),
-                c.getInt(c.getColumnIndex("day")),
-                c.getInt(c.getColumnIndex("dayOfWeek")))
+        val currentDate = KakeiboDate(c.getInt(c.getColumnIndex("year")), c.getInt(c.getColumnIndex("month")),
+                c.getInt(c.getColumnIndex("day")), c.getInt(c.getColumnIndex("dayOfWeek")))
         when (currentDate.isSameDate(previousDate) || isFirst) {
             false -> {
                 // if the date changes, set subtotal
@@ -173,13 +178,8 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 val price = c.getInt(c.getColumnIndex("price"))
                 val income = if (type == Constants.INCOME) price else 0
                 val expense = if (type == Constants.EXPENSE) price else 0
-                l.add(KakeiboListItem(c.getInt(c.getColumnIndex("_id")),
-                        currentDate,
-                        c.getString(c.getColumnIndex("category")),
-                        type,
-                        price,
-                        c.getString(c.getColumnIndex("detail")),
-                        c.getInt(c.getColumnIndex("termsOfPayment"))))
+                l.add(KakeiboListItem(c.getInt(c.getColumnIndex("_id")), currentDate, c.getString(c.getColumnIndex("category")),
+                        type, price, c.getString(c.getColumnIndex("detail")), c.getInt(c.getColumnIndex("termsOfPayment"))))
                 return getKakeiboList(c, l, currentDate, si + income, se + expense, ti + income, te + expense, c.moveToNext(), false)
             }
         }
@@ -205,6 +205,16 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         } else {
             throw UnsupportedOperationException("Listener is not implemented")
         }
+    }
+
+    // synchronize
+    fun syncKakeibo(a: Activity) {
+        // db読み込み
+        val cursor = KakeiboDBAccess().readUnsynchronizedEntry(a)
+        // json変換
+        // http送信
+        // http受信
+        // db書き込み
     }
 
     //===
