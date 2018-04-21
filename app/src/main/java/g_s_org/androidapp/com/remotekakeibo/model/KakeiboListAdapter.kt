@@ -1,7 +1,6 @@
 package g_s_org.androidapp.com.remotekakeibo.model
 
 import android.content.Context
-import android.content.res.Resources
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View

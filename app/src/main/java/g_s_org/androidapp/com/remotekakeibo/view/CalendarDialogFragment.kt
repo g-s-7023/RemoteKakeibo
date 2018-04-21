@@ -114,7 +114,7 @@ class CalendarDialogFragment : DialogFragment() {
         // get parent fragment
         val parent = parentFragment
         if (parent is OnDialogInteractionListener) {
-            // callback
+            // mCallback
             parent.onDialogDateSelected(currentYear, currentMonth, day)
             // close dialog
             dismiss()

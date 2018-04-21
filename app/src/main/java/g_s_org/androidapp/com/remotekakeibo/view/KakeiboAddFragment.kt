@@ -19,7 +19,7 @@ import g_s_org.androidapp.com.remotekakeibo.model.KakeiboDBAccess
 
 class KakeiboAddFragment : KakeiboInputFragment() {
     //===
-    //=== callback from lifecycle
+    //=== mCallback from lifecycle
     //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

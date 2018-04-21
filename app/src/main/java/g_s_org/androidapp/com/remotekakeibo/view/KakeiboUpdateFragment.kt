@@ -24,7 +24,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     var selectedId: Int = -1
 
     //===
-    //=== callback from lifecycle
+    //=== mCallback from lifecycle
     //===
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -94,7 +94,6 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     override fun onRightButtonClicked() {
         // back to list
         pageBack(mCaller)
-
     }
 
     //===

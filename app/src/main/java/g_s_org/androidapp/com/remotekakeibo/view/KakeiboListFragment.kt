@@ -3,7 +3,6 @@ package g_s_org.androidapp.com.remotekakeibo.view
 import android.app.Activity
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -21,6 +20,7 @@ import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.KakeiboDate
 import g_s_org.androidapp.com.remotekakeibo.common.KakeiboListItem
 import g_s_org.androidapp.com.remotekakeibo.model.*
+import org.json.JSONArray
 import java.util.*
 
 
@@ -52,7 +52,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     //===
     //=== initialize values
     //===
-    fun initValues() {
+    private fun initValues() {
         if (arguments != null && arguments.containsKey("YEAR_TOLIST") && arguments.containsKey("MONTH_TOLIST")) {
             setKakeiboListView(arguments.getInt("YEAR_TOLIST"), arguments.getInt("MONTH_TOLIST"))
         } else {
@@ -64,7 +64,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     //===
     //=== set listeners of each view
     //===
-    fun setListeners() {
+    private fun setListeners() {
         // year and month
         (mCaller.findViewById(R.id.ll_yearAndMonth) as LinearLayout).setOnClickListener { onYearOrMonthClicked() }
         // previous month
@@ -73,20 +73,22 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         (mCaller.findViewById(R.id.bt_nextmonth) as Button).setOnClickListener { onNextMonthClicked() }
         // new entry
         (mCaller.findViewById(R.id.bt_new) as Button).setOnClickListener { onNewEntryClicked() }
+        // synchronize
+        (mCaller.findViewById(R.id.bt_sync) as Button).setOnClickListener { onSyncClicked() }
     }
 
     //===
-    //=== listeners and callback
+    //=== listeners and mCallback
     //===
     // year and month label
-    fun onYearOrMonthClicked() {
+    private fun onYearOrMonthClicked() {
         // show DatePickerDialogFragment
         DatePickerDialogFragment.newInstance(currentYearMonth[Constants.CURRENT_YEAR], currentYearMonth[Constants.CURRENT_MONTH])
                 .show(childFragmentManager, "dialog")
     }
 
     // previous month button
-    fun onPreviousMonthClicked() {
+    private fun onPreviousMonthClicked() {
         when (currentYearMonth[Constants.CURRENT_MONTH]) {
             1 -> setKakeiboListView(currentYearMonth[Constants.CURRENT_YEAR] - 1, 12)
             else -> setKakeiboListView(currentYearMonth[Constants.CURRENT_YEAR], currentYearMonth[Constants.CURRENT_MONTH] - 1)
@@ -94,7 +96,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
 
     // next month button
-    fun onNextMonthClicked() {
+    private fun onNextMonthClicked() {
         when (currentYearMonth[Constants.CURRENT_MONTH]) {
             12 -> setKakeiboListView(currentYearMonth[Constants.CURRENT_YEAR + 1], 1)
             else -> setKakeiboListView(currentYearMonth[Constants.CURRENT_YEAR], currentYearMonth[Constants.CURRENT_MONTH] + 1)
@@ -102,13 +104,20 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
 
     // new entry button
-    fun onNewEntryClicked() {
+    private fun onNewEntryClicked() {
         openNewEntry(mCaller)
     }
 
     // sync button
-    fun onSyncClicked() {
-        syncKakeibo(mCaller)
+    private fun onSyncClicked() {
+        // read entries yet to be synchronized
+        val cursor = KakeiboDBAccess().readUnsynchronizedEntry(mCaller)
+        // make list in json
+        val jsonArray = getJsonArrayToSync(cursor)
+        // send http
+        val
+        // http受信
+        // db書き込み
     }
 
 
@@ -117,7 +126,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         openEntryForUpdate(mCaller, item)
     }
 
-    // callback from dialog
+    // mCallback from dialog
     override fun onDialogYearMonthSelected(y: Int, m: Int) {
         setKakeiboListView(y, m)
     }
@@ -207,15 +216,22 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         }
     }
 
-    // synchronize
-    fun syncKakeibo(a: Activity) {
-        // db読み込み
-        val cursor = KakeiboDBAccess().readUnsynchronizedEntry(a)
-        // json変換
-        // http送信
-        // http受信
-        // db書き込み
+    fun getJsonArrayToSync(c: Cursor?): JSONArray {
+        val array = JSONArray()
+        if (c != null) {
+            while (c.moveToNext()) {
+                array.put(JsonKakeiboItem(c.getInt(c.getColumnIndex("_id")),
+                        c.getInt(c.getColumnIndex("year")), c.getInt(c.getColumnIndex("month")),
+                        c.getInt(c.getColumnIndex("day")), c.getInt(c.getColumnIndex("dayOfWeek")),
+                        c.getString(c.getColumnIndex("category")), c.getInt(c.getColumnIndex("type")),
+                        c.getInt(c.getColumnIndex("price")), c.getString(c.getColumnIndex("detail")),
+                        c.getInt(c.getColumnIndex("termsOfPayment"))).toJson())
+            }
+        }
+        return array
     }
+
+
 
     //===
     //=== factory method

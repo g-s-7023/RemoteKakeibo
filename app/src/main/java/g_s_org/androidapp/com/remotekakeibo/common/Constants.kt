@@ -100,7 +100,10 @@ class Constants{
         //===
         const val CURRENT_YEAR = 0
         const val CURRENT_MONTH = 1
-
+        //===
+        //=== timeout of http access
+        //===
+        const val HTTP_TIMEOUT=100000
 
     }
 }

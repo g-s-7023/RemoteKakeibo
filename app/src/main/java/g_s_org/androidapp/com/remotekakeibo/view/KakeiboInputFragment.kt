@@ -30,7 +30,7 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
     protected var condition = Array<Int>(3, { -1 })
 
     //===
-    //=== callback from lifecycle
+    //=== mCallback from lifecycle
     //===
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -99,7 +99,7 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
     }
 
     //===
-    //=== listeners and callback
+    //=== listeners and mCallback
     //===
     // on select an item of list
     fun onListSelected(parent: AdapterView<*>, pos: Int) {
@@ -179,7 +179,7 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
     abstract fun onRightButtonClicked()
     abstract fun onCenterButtonClicked()
 
-    // callback from calendar dialog
+    // mCallback from calendar dialog
     override fun onDialogDateSelected(y: Int, m: Int, d: Int) {
         setDate(y, m, d)
     }
