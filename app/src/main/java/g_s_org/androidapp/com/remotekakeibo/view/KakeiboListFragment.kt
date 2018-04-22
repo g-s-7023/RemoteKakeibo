@@ -24,7 +24,6 @@ import g_s_org.androidapp.com.remotekakeibo.common.KakeiboListItem
 import g_s_org.androidapp.com.remotekakeibo.model.*
 import org.json.JSONArray
 import java.util.*
-import org.json.JSONObject
 
 
 class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallback, KakeiboListAdapter.OnKakeiboListItemClickListener {
@@ -126,8 +125,11 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         HttpPostKakeibo(mCaller.getString(R.string.kakeibo_url), jsonArray, object : HttpPostKakeibo.KakeiboSyncCallback {
             // callback after uploading
             override fun callback(result: JSONArray) {
-                // jsonからcontentvaluesへの変換
-                // DBへの登録
+                // get contentvalues and id from json
+                val cvAndId = getContentValuesAndId(result, 0, SparseArray(result.length()))
+                // get id which already exist in Client's DB
+                val idForUpdate =
+
 
                 onUploadFinished(result)
             }
@@ -258,7 +260,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
     */
     // jsonをパースしてcontentvaluesとidのペアを返す
-    tailrec fun getIdAndContentValues(result: JSONArray, pos: Int, map:SparseArray<ContentValues>):SparseArray<ContentValues>{
+    tailrec fun getContentValuesAndId(result: JSONArray, pos: Int, map:SparseArray<ContentValues>):SparseArray<ContentValues>{
         when(pos){
             result.length() ->{
                 return map
@@ -280,9 +282,13 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 cv.put("isSynchronized", Constants.TRUE)
                 // set id and contentvalues
                 map.put(obj?.getInt("id")?: -1, cv)
-                return getIdAndContentValues(result, pos + 1, map)
+                return getContentValuesAndId(result, pos + 1, map)
             }
         }
+    }
+
+    fun getIdForUpdate(cvAndId:SparseArray<ContentValues>):MutableList<Int>{
+
     }
     // 全てのidについて端末のDBの存在チェックをかける
     // 存在チェックの結果に基づき、挿入用のcontentValuesと更新用のcontentValuesに分ける

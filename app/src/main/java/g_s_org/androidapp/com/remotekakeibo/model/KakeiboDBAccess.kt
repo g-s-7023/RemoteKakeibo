@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.support.v4.app.FragmentActivity
 import android.util.Log
+import android.util.SparseArray
 import android.widget.Toast
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
@@ -50,7 +51,7 @@ class KakeiboDBAccess {
         }
     }
 
-    fun existId(id:Array<Int>):MutableList<Int>{
+    fun existId(a:Activity, cv:SparseArray<ContentValues>):MutableList<Int>{
 
     }
 
