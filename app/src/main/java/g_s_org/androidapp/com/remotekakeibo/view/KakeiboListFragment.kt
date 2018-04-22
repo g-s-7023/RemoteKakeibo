@@ -1,6 +1,7 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteException
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.RecyclerView
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,12 +24,16 @@ import g_s_org.androidapp.com.remotekakeibo.common.KakeiboListItem
 import g_s_org.androidapp.com.remotekakeibo.model.*
 import org.json.JSONArray
 import java.util.*
+import org.json.JSONObject
 
 
 class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallback, KakeiboListAdapter.OnKakeiboListItemClickListener {
     private lateinit var mCaller: FragmentActivity
     private var currentYearMonth = arrayOf(Constants.DEFAULT_YEAR, 1)
 
+    //===
+    //=== life cycle
+    //===
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is FragmentActivity) {
@@ -78,7 +84,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
 
     //===
-    //=== listeners and mCallback
+    //=== listeners and callback
     //===
     // year and month label
     private fun onYearOrMonthClicked() {
@@ -112,21 +118,31 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     private fun onSyncClicked() {
         // read entries yet to be synchronized
         val cursor = KakeiboDBAccess().readUnsynchronizedEntry(mCaller)
+        // できればそれらのidを取り出したい
+
         // make list in json
         val jsonArray = getJsonArrayToSync(cursor)
-        // send http
-        val
-        // http受信
-        // db書き込み
-    }
+        // upload json to server
+        HttpPostKakeibo(mCaller.getString(R.string.kakeibo_url), jsonArray, object : HttpPostKakeibo.KakeiboSyncCallback {
+            // callback after uploading
+            override fun callback(result: JSONArray) {
+                // jsonからcontentvaluesへの変換
+                // DBへの登録
 
+                onUploadFinished(result)
+            }
+        }).execute()
+
+        // unsyncだったエントリをsyncedに更新する
+
+    }
 
     // row
     override fun onItemClicked(item: KakeiboListItem) {
         openEntryForUpdate(mCaller, item)
     }
 
-    // mCallback from dialog
+    // callback from dialog
     override fun onDialogYearMonthSelected(y: Int, m: Int) {
         setKakeiboListView(y, m)
     }
@@ -231,6 +247,56 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         return array
     }
 
+    // idで新規か更新かを確認して、contentValuesに追加
+    /*
+    fun getContentValues(result:JSONArray):ContentValues{
+        val valuesForInsert:MutableList<ContentValues>
+        val valuesForUpdate:MutableList<ContentValues>
+
+        val trainObject = result.getJSONObject(i)
+
+    }
+    */
+    // jsonをパースしてcontentvaluesとidのペアを返す
+    tailrec fun getIdAndContentValues(result: JSONArray, pos: Int, map:SparseArray<ContentValues>):SparseArray<ContentValues>{
+        when(pos){
+            result.length() ->{
+                return map
+            }
+            else ->{
+                val cv = ContentValues()
+                val obj = result.getJSONObject(pos)
+                // set values
+                cv.put("category", obj?.getString("category")?: "")
+                cv.put("detail", obj?.getString("detail")?: "")
+                cv.put("kakeiboName", Constants.KAKEIBONAME_MINE)
+                cv.put("year", obj?.getInt("year")?: Constants.DEFAULT_YEAR)
+                cv.put("month", obj?.getInt("month")?: 1)
+                cv.put("day", obj?.getInt("day")?: 1)
+                cv.put("dayOfWeek", obj?.getInt("dayOfWeek")?: 1)
+                cv.put("price", obj?.getInt("price")?: 0)
+                cv.put("termsOfPayment", obj?.getInt("termsOfPayment")?: Constants.CASH)
+                cv.put("type", obj?.getInt("type")?: Constants.EXPENSE)
+                cv.put("isSynchronized", Constants.TRUE)
+                // set id and contentvalues
+                map.put(obj?.getInt("id")?: -1, cv)
+                return getIdAndContentValues(result, pos + 1, map)
+            }
+        }
+    }
+    // 全てのidについて端末のDBの存在チェックをかける
+    // 存在チェックの結果に基づき、挿入用のcontentValuesと更新用のcontentValuesに分ける
+
+    fun getContentValues(result: JSONArray, pos: Int, keysForUpdate: MutableList<Int>, cv: MutableList<ContentValues>)
+            : Pair<MutableList<Int>, MutableList<ContentValues>> {
+        if (pos == result.length()) {
+            return Pair(keysForUpdate, cv)
+        }
+        val obj = result.getJSONObject(pos)
+        val id = obj?.getInt("id") ?: -1
+        // check if the id exists in Client's DB
+        when(KakeiboDBAccess().existId())
+    }
 
 
     //===

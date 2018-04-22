@@ -50,6 +50,10 @@ class KakeiboDBAccess {
         }
     }
 
+    fun existId(id:Array<Int>):MutableList<Int>{
+
+    }
+
     // execute function passed
     private fun execWrite(a: Activity, f: (SQLiteDatabase) -> Unit) {
         // create helper

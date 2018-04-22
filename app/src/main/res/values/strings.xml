@@ -60,6 +60,9 @@
     <!-- title -->
     <string name="title_yearandmonth">年月選択</string>
 
+    <!-- URL -->
+    <string name="kakeibo_url">https://xxx.com</string>
+
     <!-- list of category -->
     <string-array name="lv_category_and_detail">
         <item>外食(朝)</item>

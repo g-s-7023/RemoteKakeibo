@@ -13,11 +13,14 @@ import java.net.URL
 import java.util.*
 
 
-/**
- * Created by nao on 2018/04/21.
- */
-class HttpPost(val mUrlString: String = "", val mBody: JSONArray, val mCallback:WeakReference<KakeiboCallback>)
+class HttpPostKakeibo(val mUrlString: String, val mBody: JSONArray, val mCallback:WeakReference<KakeiboSyncCallback>)
     : AsyncTask<Unit, Unit, JSONArray>() {
+
+    constructor(url:String, body:JSONArray, callback:KakeiboSyncCallback):this(url, body, WeakReference(callback))
+
+    fun setListener(callback:KakeiboSyncCallback){
+        mCallback.apply { callback }
+    }
 
     override fun doInBackground(vararg params: Unit?): JSONArray? {
         var con: HttpURLConnection? = null
@@ -52,11 +55,11 @@ class HttpPost(val mUrlString: String = "", val mBody: JSONArray, val mCallback:
             // convert to json object and return it
             return JSONArray(responseString)
         } catch (e: MalformedURLException) {
-            Log.e("HttpPost", "", e)
+            Log.e("HttpPostKakeibo", "", e)
         } catch (e: IOException) {
-            Log.e("HttpPost", "", e)
+            Log.e("HttpPostKakeibo", "", e)
         } catch (e: JSONException) {
-            Log.e("HttpPost", "", e)
+            Log.e("HttpPostKakeibo", "", e)
         } finally {
             con?.disconnect()
         }
@@ -69,7 +72,7 @@ class HttpPost(val mUrlString: String = "", val mBody: JSONArray, val mCallback:
         if (c != null) {
             c.callback(result)
         } else {
-            Log.e("HttpPost", "mCallback is not set")
+            Log.e("HttpPostKakeibo", "mCallback is not set")
         }
     }
 
@@ -85,7 +88,7 @@ class HttpPost(val mUrlString: String = "", val mBody: JSONArray, val mCallback:
         return sb.toString()
     }
 
-    interface KakeiboCallback {
+    interface KakeiboSyncCallback {
         fun callback(result: JSONArray)
     }
 }
