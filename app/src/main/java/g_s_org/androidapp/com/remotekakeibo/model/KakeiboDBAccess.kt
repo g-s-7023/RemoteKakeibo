@@ -52,7 +52,7 @@ class KakeiboDBAccess {
     }
 
     fun existId(a:Activity, cv:SparseArray<ContentValues>):MutableList<Int>{
-
+        val ids = mutableListOf<Int>()
     }
 
     // execute function passed
