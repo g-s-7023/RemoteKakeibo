@@ -13,19 +13,19 @@ import g_s_org.androidapp.com.remotekakeibo.common.Constants
 
 class KakeiboDBAccess {
 
-    fun insertKakeibo(a: Activity, cv:ContentValues) {
+    fun insertKakeibo(a: Activity, cv: ContentValues) {
         execWrite(a) { db: SQLiteDatabase ->
             db.insert(DBAccessHelper.TABLE_NAME, null, cv)
         }
     }
 
-    fun deleteKakeibo(a: Activity, id:Int){
+    fun deleteKakeibo(a: Activity, id: Int) {
         execWrite(a) { db: SQLiteDatabase ->
             db.delete(DBAccessHelper.TABLE_NAME, "_id = ?", arrayOf(id.toString()))
         }
     }
 
-    fun updateKakeibo(a: FragmentActivity, id:Int, cv: ContentValues) {
+    fun updateKakeibo(a: FragmentActivity, id: Int, cv: ContentValues) {
         execWrite(a) { db: SQLiteDatabase ->
             db.update(DBAccessHelper.TABLE_NAME, cv, "_id = ?", arrayOf(id.toString()))
         }
@@ -51,8 +51,11 @@ class KakeiboDBAccess {
         }
     }
 
-    fun existId(a:Activity, cv:SparseArray<ContentValues>):MutableList<Int>{
+    fun readAllId(a: Activity): Cursor? {
         val ids = mutableListOf<Int>()
+        return execRead(a) { db: SQLiteDatabase ->
+            db.query(DBAccessHelper.TABLE_NAME, arrayOf("_id"), null, null, null, null, null)
+        }
     }
 
     // execute function passed

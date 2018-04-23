@@ -131,7 +131,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 val idForUpdate =
 
 
-                onUploadFinished(result)
+                        onUploadFinished(result)
             }
         }).execute()
 
@@ -260,39 +260,47 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     }
     */
     // jsonをパースしてcontentvaluesとidのペアを返す
-    tailrec fun getContentValuesAndId(result: JSONArray, pos: Int, map:SparseArray<ContentValues>):SparseArray<ContentValues>{
-        when(pos){
-            result.length() ->{
+    tailrec fun getContentValuesAndId(result: JSONArray, pos: Int, map: SparseArray<ContentValues>): SparseArray<ContentValues> {
+        when (pos) {
+            result.length() -> {
                 return map
             }
-            else ->{
+            else -> {
                 val cv = ContentValues()
                 val obj = result.getJSONObject(pos)
                 // set values
-                cv.put("category", obj?.getString("category")?: "")
-                cv.put("detail", obj?.getString("detail")?: "")
+                cv.put("category", obj?.getString("category") ?: "")
+                cv.put("detail", obj?.getString("detail") ?: "")
                 cv.put("kakeiboName", Constants.KAKEIBONAME_MINE)
-                cv.put("year", obj?.getInt("year")?: Constants.DEFAULT_YEAR)
-                cv.put("month", obj?.getInt("month")?: 1)
-                cv.put("day", obj?.getInt("day")?: 1)
-                cv.put("dayOfWeek", obj?.getInt("dayOfWeek")?: 1)
-                cv.put("price", obj?.getInt("price")?: 0)
-                cv.put("termsOfPayment", obj?.getInt("termsOfPayment")?: Constants.CASH)
-                cv.put("type", obj?.getInt("type")?: Constants.EXPENSE)
+                cv.put("year", obj?.getInt("year") ?: Constants.DEFAULT_YEAR)
+                cv.put("month", obj?.getInt("month") ?: 1)
+                cv.put("day", obj?.getInt("day") ?: 1)
+                cv.put("dayOfWeek", obj?.getInt("dayOfWeek") ?: 1)
+                cv.put("price", obj?.getInt("price") ?: 0)
+                cv.put("termsOfPayment", obj?.getInt("termsOfPayment") ?: Constants.CASH)
+                cv.put("type", obj?.getInt("type") ?: Constants.EXPENSE)
                 cv.put("isSynchronized", Constants.TRUE)
                 // set id and contentvalues
-                map.put(obj?.getInt("id")?: -1, cv)
+                map.put(obj?.getInt("id") ?: -1, cv)
                 return getContentValuesAndId(result, pos + 1, map)
             }
         }
     }
 
-    fun getIdForUpdate(cvAndId:SparseArray<ContentValues>):MutableList<Int>{
-
+    fun getIdForUpdate(a: Activity, cvAndId: SparseArray<ContentValues>): MutableList<Int> {
+        val cursor = KakeiboDBAccess().readAllId(a)
+        val ids = mutableListOf<Int>()
+        // get all ids in client's DB
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getInt(cursor.getColumnIndex("_id")))
+            }
+        }
+        // get id for update
     }
     // 全てのidについて端末のDBの存在チェックをかける
     // 存在チェックの結果に基づき、挿入用のcontentValuesと更新用のcontentValuesに分ける
-
+/*
     fun getContentValues(result: JSONArray, pos: Int, keysForUpdate: MutableList<Int>, cv: MutableList<ContentValues>)
             : Pair<MutableList<Int>, MutableList<ContentValues>> {
         if (pos == result.length()) {
@@ -303,7 +311,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         // check if the id exists in Client's DB
         when(KakeiboDBAccess().existId())
     }
-
+*/
 
     //===
     //=== factory method
