@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.RecyclerView
-import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +19,7 @@ import android.widget.TextView
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.KakeiboDate
+import g_s_org.androidapp.com.remotekakeibo.common.KakeiboItemForSync
 import g_s_org.androidapp.com.remotekakeibo.common.KakeiboListItem
 import g_s_org.androidapp.com.remotekakeibo.model.*
 import org.json.JSONArray
@@ -117,21 +117,24 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     private fun onSyncClicked() {
         // read entries yet to be synchronized
         val cursor = KakeiboDBAccess().readUnsynchronizedEntry(mCaller)
+
+
         // できればそれらのidを取り出したい
 
-        // make list in json
+
+        // make list in json format
         val jsonArray = getJsonArrayToSync(cursor)
         // upload json to server
         HttpPostKakeibo(mCaller.getString(R.string.kakeibo_url), jsonArray, object : HttpPostKakeibo.KakeiboSyncCallback {
             // callback after uploading
             override fun callback(result: JSONArray) {
-                // get contentvalues and id from json
-                val cvAndId = getContentValuesAndId(result, 0, SparseArray(result.length()))
                 // get id which already exist in Client's DB
-                val idForUpdate =
+                val myIds = getIdsInClient(mCaller)
+                // get contentvalues and id received from server
+                val cvAndId = getContentValuesFromServer(result, mutableListOf(), 0)
+                // get contentValues for insert and update
+                val (cvForInsert, cvForUpdate) = getContentValuesForSync(myIds, cvAndId, mutableListOf(), mutableListOf(), 0)
 
-
-                        onUploadFinished(result)
             }
         }).execute()
 
@@ -249,21 +252,25 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         return array
     }
 
-    // idで新規か更新かを確認して、contentValuesに追加
-    /*
-    fun getContentValues(result:JSONArray):ContentValues{
-        val valuesForInsert:MutableList<ContentValues>
-        val valuesForUpdate:MutableList<ContentValues>
-
-        val trainObject = result.getJSONObject(i)
-
+    // get ids in client's DB
+    fun getIdsInClient(a: Activity): MutableList<Int> {
+        val cursor = KakeiboDBAccess().readAllId(a)
+        val ids = mutableListOf<Int>()
+        // get all ids in client's DB
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                ids.add(cursor.getInt(cursor.getColumnIndex("_id")))
+            }
+        }
+        return ids
     }
-    */
-    // jsonをパースしてcontentvaluesとidのペアを返す
-    tailrec fun getContentValuesAndId(result: JSONArray, pos: Int, map: SparseArray<ContentValues>): SparseArray<ContentValues> {
+
+    // parse json and get pairs of contentvalues and id
+    tailrec fun getContentValuesFromServer(result: JSONArray, idAndCv: MutableList<KakeiboItemForSync>, pos: Int)
+            : MutableList<KakeiboItemForSync> {
         when (pos) {
             result.length() -> {
-                return map
+                return idAndCv
             }
             else -> {
                 val cv = ContentValues()
@@ -281,37 +288,30 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 cv.put("type", obj?.getInt("type") ?: Constants.EXPENSE)
                 cv.put("isSynchronized", Constants.TRUE)
                 // set id and contentvalues
-                map.put(obj?.getInt("id") ?: -1, cv)
-                return getContentValuesAndId(result, pos + 1, map)
+                idAndCv.add(KakeiboItemForSync(obj?.getInt("id") ?: -1, cv))
+                return getContentValuesFromServer(result,  idAndCv, pos + 1)
             }
         }
     }
 
-    fun getIdForUpdate(a: Activity, cvAndId: SparseArray<ContentValues>): MutableList<Int> {
-        val cursor = KakeiboDBAccess().readAllId(a)
-        val ids = mutableListOf<Int>()
-        // get all ids in client's DB
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                ids.add(cursor.getInt(cursor.getColumnIndex("_id")))
-            }
+    tailrec fun getContentValuesForSync(myIds: MutableList<Int>, valFromSrv: MutableList<KakeiboItemForSync>, cvForInsert: MutableList<ContentValues>,
+                                        cvForUpdate: MutableList<KakeiboItemForSync>, index: Int): Pair<MutableList<ContentValues>, MutableList<KakeiboItemForSync>> {
+        if (index == valFromSrv.size) {
+            return Pair(cvForInsert, cvForUpdate)
         }
-        // get id for update
-    }
-    // 全てのidについて端末のDBの存在チェックをかける
-    // 存在チェックの結果に基づき、挿入用のcontentValuesと更新用のcontentValuesに分ける
-/*
-    fun getContentValues(result: JSONArray, pos: Int, keysForUpdate: MutableList<Int>, cv: MutableList<ContentValues>)
-            : Pair<MutableList<Int>, MutableList<ContentValues>> {
-        if (pos == result.length()) {
-            return Pair(keysForUpdate, cv)
+        when (existId(valFromSrv[index].id, myIds)) {
+            true -> cvForUpdate.add(valFromSrv[index])
+            false -> cvForInsert.add(valFromSrv[index].cv)
         }
-        val obj = result.getJSONObject(pos)
-        val id = obj?.getInt("id") ?: -1
-        // check if the id exists in Client's DB
-        when(KakeiboDBAccess().existId())
+        return getContentValuesForSync(myIds, valFromSrv, cvForInsert, cvForUpdate, index + 1)
     }
-*/
+
+    fun existId(targetId: Int, myIds: MutableList<Int>): Boolean {
+        for (id in myIds) {
+            if (id == targetId) return true
+        }
+        return false
+    }
 
     //===
     //=== factory method

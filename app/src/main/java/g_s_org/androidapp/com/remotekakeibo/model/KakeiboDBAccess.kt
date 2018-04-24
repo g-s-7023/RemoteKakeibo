@@ -10,6 +10,7 @@ import android.util.SparseArray
 import android.widget.Toast
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
+import g_s_org.androidapp.com.remotekakeibo.common.KakeiboItemForSync
 
 class KakeiboDBAccess {
 
@@ -30,6 +31,17 @@ class KakeiboDBAccess {
             db.update(DBAccessHelper.TABLE_NAME, cv, "_id = ?", arrayOf(id.toString()))
         }
     }
+
+    fun syncUpdate(a: FragmentActivity, items:MutableList<KakeiboItemForSync>){
+        execWrite(a) { db: SQLiteDatabase ->
+            for (item in items) {
+                db.update(DBAccessHelper.TABLE_NAME, item.cv, "_id = ?", arrayOf(item.id.toString()))
+            }
+        }
+    }
+
+    //insert
+
 
     fun readKakeiboOfMonth(a: Activity, year: Int, month: Int): Cursor? {
         return execRead(a) { db: SQLiteDatabase ->
