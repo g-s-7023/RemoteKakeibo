@@ -6,14 +6,14 @@ import android.content.SharedPreferences
 /**
  * Created by C170044 on 2018/04/03.
  */
-class DetailHistoryAccess() {
+class DetailHistoryAccess(val ctx:Context) {
     // preference name of detail history
     private val DETAIL_HISTORY = "DETAIL_HISTORY"
     // keys of "detail" preference
     private val prefKeys = arrayOf("1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th")
 
     // save preference with new value inserted
-    fun savePreference(input: String, ctx: Context) {
+    fun savePreference(input: String) {
         // loaded preferences
         val prefs = ctx.getSharedPreferences(DETAIL_HISTORY, Context.MODE_PRIVATE)
         // get list of preference and index for delete
@@ -29,6 +29,7 @@ class DetailHistoryAccess() {
         editor.commit()
     }
 
+    // get list of preference and index for delete
     private tailrec fun getKey(srcVals: SharedPreferences, dstList: MutableList<String>, input: String, delPos: Int, pos: Int): Pair<MutableList<String>, Int> {
         // if position reaches maximum, return values
         if (pos == prefKeys.size) {
@@ -43,7 +44,7 @@ class DetailHistoryAccess() {
             else -> getKey(srcVals, dstList, input, delPos, pos + 1)
         }
     }
-
+/*
     // insert new value to destination array
     private tailrec fun insertPreference(src: SharedPreferences, dst: Array<String>, dstIndex: Int, keys: Array<String>, keyIndex: Int, input: String): Array<String> {
         when (dstIndex) {
@@ -64,9 +65,9 @@ class DetailHistoryAccess() {
             }
         }
     }
-
+*/
     // get array of values stored in preference
-    fun getPreference(ctx: Context): Array<String> {
+    fun getPreference(): Array<String> {
         // loaded preferences
         val prefs = ctx.getSharedPreferences(DETAIL_HISTORY, Context.MODE_PRIVATE)
         // array to return

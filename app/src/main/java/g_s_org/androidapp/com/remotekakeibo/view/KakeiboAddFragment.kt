@@ -98,10 +98,10 @@ class KakeiboAddFragment : KakeiboInputFragment() {
 
     fun saveData(a: Activity, cv: ContentValues, d:String) {
         // insert to DB
-        KakeiboDBAccess().insertKakeibo(a, cv)
+        KakeiboDBAccess(a).insertKakeibo(cv)
         // save detail to preference
         if (d.isNotBlank()) {
-            DetailHistoryAccess().savePreference(d, mCaller)
+            DetailHistoryAccess(a).savePreference(d)
         }
         // initialize values(except date)
         resetValues()

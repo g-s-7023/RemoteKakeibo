@@ -101,12 +101,12 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
     //===
     fun deleteData(a: FragmentActivity, id:Int) {
         // delete entry
-        KakeiboDBAccess().deleteKakeibo(a, id)
+        KakeiboDBAccess(a).deleteKakeibo(id)
     }
 
     fun updateData(a: FragmentActivity, id:Int, cv: ContentValues) {
         // update DB
-        KakeiboDBAccess().updateKakeibo(a, id, cv)
+        KakeiboDBAccess(a).updateKakeibo(id, cv)
     }
 
     fun pageBack(a: FragmentActivity) {

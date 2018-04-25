@@ -274,7 +274,7 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
         (mCaller.findViewById(R.id.et_category) as EditText).setBackgroundResource(R.drawable.categoryanddetail_noselected)
         // set adapter to ListView
         (mCaller.findViewById(R.id.lv_categoryAndDetail) as ListView).adapter =
-                ArrayAdapter<String>(mCaller, android.R.layout.simple_list_item_1, DetailHistoryAccess().getPreference(mCaller))
+                ArrayAdapter<String>(mCaller, android.R.layout.simple_list_item_1, DetailHistoryAccess(mCaller).getPreference())
         // set input target value
         condition[Constants.INPUT_TARGET] = Constants.DETAIL
     }

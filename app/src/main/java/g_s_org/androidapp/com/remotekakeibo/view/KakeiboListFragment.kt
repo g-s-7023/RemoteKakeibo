@@ -115,6 +115,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
 
     // sync button
     private fun onSyncClicked() {
+        /*
         // read entries yet to be synchronized
         val cursor = KakeiboDBAccess(mCaller).readUnsynchronizedEntry()
         // make list in json format and
@@ -133,6 +134,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 k.setSynchronized(ids)
             }
         }).execute()
+        */
     }
 
     // row
@@ -273,7 +275,9 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
             // set id and contentvalues
             val id = obj.getInt("id")
             when (id) {
+                // no id means data created in server
                 -1 -> cvForInsert.add(cv)
+                // positive id means data created in client and updated in server
                 else -> cvForUpdate.add(KakeiboItemForSync(id, cv))
             }
         }
