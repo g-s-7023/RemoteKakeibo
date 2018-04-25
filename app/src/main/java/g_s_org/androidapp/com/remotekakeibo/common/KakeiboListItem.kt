@@ -2,6 +2,7 @@ package g_s_org.androidapp.com.remotekakeibo.common
 
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.KakeiboDate
+import java.net.ContentHandler
 
 data class KakeiboListItem(var id:Int = -1,
                            var isSummary:Boolean = false,
@@ -11,6 +12,7 @@ data class KakeiboListItem(var id:Int = -1,
                            var price:Int = 0,
                            var detail:String = "",
                            var termsOfPayment:Int = Constants.CASH,
+                           var isSynchronized:Int = Constants.FALSE,
                            var subtotalIncome:Int = 0,
                            var subtotalExpense:Int = 0){
 
@@ -21,7 +23,7 @@ data class KakeiboListItem(var id:Int = -1,
         subtotalExpense = subE
     }
 
-    constructor(i:Int, dat: KakeiboDate, c:String, t:Int, p:Int, det:String, tOfP:Int): this(){
+    constructor(i:Int, dat: KakeiboDate, c:String, t:Int, p:Int, det:String, tOfP:Int, sy:Int): this(){
         id = i
         date = dat
         category = c
@@ -29,5 +31,6 @@ data class KakeiboListItem(var id:Int = -1,
         price = p
         detail = det
         termsOfPayment = tOfP
+        isSynchronized = sy
     }
 }

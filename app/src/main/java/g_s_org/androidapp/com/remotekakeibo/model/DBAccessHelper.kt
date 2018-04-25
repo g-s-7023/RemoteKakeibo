@@ -40,6 +40,7 @@ class DBAccessHelper(ctx: Context) : SQLiteOpenHelper(ctx, DB_NAME, null, DB_VER
                 "price INTEGER not null," +
                 "detail TEXT," +
                 "termsOfPayment INTEGER," +
+                "isDeleted INTEGER," +
                 "isSynchronized INTEGER)"
         db.execSQL(sql)
     }

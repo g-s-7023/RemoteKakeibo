@@ -343,6 +343,8 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
         cv.put("termsOfPayment", con[Constants.TERMS_OF_PAYMENT])
         // set income / expense
         cv.put("type", con[Constants.TYPE])
+        // set deleted flag (OFF)
+        cv.put("isDeleted", Constants.FALSE)
         // set synchronized flag
         cv.put("isSynchronized", Constants.FALSE)
         return cv

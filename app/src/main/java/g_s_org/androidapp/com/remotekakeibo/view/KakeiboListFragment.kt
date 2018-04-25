@@ -116,30 +116,23 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     // sync button
     private fun onSyncClicked() {
         // read entries yet to be synchronized
-        val cursor = KakeiboDBAccess().readUnsynchronizedEntry(mCaller)
-
-
-        // できればそれらのidを取り出したい
-
-
-        // make list in json format
-        val jsonArray = getJsonArrayToSync(cursor)
+        val cursor = KakeiboDBAccess(mCaller).readUnsynchronizedEntry()
+        // make list in json format and
+        val (jsonArray, ids) = getJsonArrayToSync(cursor)
         // upload json to server
         HttpPostKakeibo(mCaller.getString(R.string.kakeibo_url), jsonArray, object : HttpPostKakeibo.KakeiboSyncCallback {
             // callback after uploading
             override fun callback(result: JSONArray) {
-                // get id which already exist in Client's DB
-                val myIds = getIdsInClient(mCaller)
-                // get contentvalues and id received from server
-                val cvAndId = getContentValuesFromServer(result, mutableListOf(), 0)
                 // get contentValues for insert and update
-                val (cvForInsert, cvForUpdate) = getContentValuesForSync(myIds, cvAndId, mutableListOf(), mutableListOf(), 0)
-
+                val (cvForInsert, cvForUpdate) = getContentValuesFromServer(result, mutableListOf(), mutableListOf(), 0)
+                // insert and update
+                val k = KakeiboDBAccess(mCaller)
+                k.syncInsert(cvForInsert)
+                k.syncUpdate(cvForUpdate)
+                // update isSynchronized
+                k.setSynchronized(ids)
             }
         }).execute()
-
-        // unsyncだったエントリをsyncedに更新する
-
     }
 
     // row
@@ -160,7 +153,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         currentYearMonth[Constants.CURRENT_YEAR] = y
         currentYearMonth[Constants.CURRENT_MONTH] = m
         // read DB
-        val cursor: Cursor? = KakeiboDBAccess().readKakeiboOfMonth(mCaller, y, m)
+        val cursor: Cursor? = KakeiboDBAccess(mCaller).readKakeiboOfMonth(y, m)
         // getKakeiboList may throw SQLiteException
         cursor?.use {
             // get kakeibo list
@@ -180,6 +173,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     //===
     //=== business logic
     //===
+    // get list of kakeibo from DB
     @Throws(SQLiteException::class)
     private tailrec fun getKakeiboList(c: Cursor, l: MutableList<KakeiboListItem>, previousDate: KakeiboDate, si: Int, se: Int, ti: Int, te: Int,
                                        existNext: Boolean, isFirst: Boolean): Triple<MutableList<KakeiboListItem>, Int, Int> {
@@ -208,14 +202,14 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 val price = c.getInt(c.getColumnIndex("price"))
                 val income = if (type == Constants.INCOME) price else 0
                 val expense = if (type == Constants.EXPENSE) price else 0
-                l.add(KakeiboListItem(c.getInt(c.getColumnIndex("_id")), currentDate, c.getString(c.getColumnIndex("category")),
-                        type, price, c.getString(c.getColumnIndex("detail")), c.getInt(c.getColumnIndex("termsOfPayment"))))
+                l.add(KakeiboListItem(c.getInt(c.getColumnIndex("_id")), currentDate, c.getString(c.getColumnIndex("category")), type, price,
+                        c.getString(c.getColumnIndex("detail")), c.getInt(c.getColumnIndex("termsOfPayment")), c.getInt(c.getColumnIndex("isSynchronized"))))
                 return getKakeiboList(c, l, currentDate, si + income, se + expense, ti + income, te + expense, c.moveToNext(), false)
             }
         }
     }
 
-    // new entry button
+    // open new entry
     fun openNewEntry(a: Activity) {
         if (a is FragmentToActivityInterection) {
             a.backFragment()
@@ -237,8 +231,10 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         }
     }
 
-    fun getJsonArrayToSync(c: Cursor?): JSONArray {
+    // read DB and make JSON array for send
+    fun getJsonArrayToSync(c: Cursor?): Pair<JSONArray, MutableList<Int>> {
         val array = JSONArray()
+        val ids = mutableListOf<Int>()
         if (c != null) {
             while (c.moveToNext()) {
                 array.put(JsonKakeiboItem(c.getInt(c.getColumnIndex("_id")),
@@ -246,71 +242,42 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                         c.getInt(c.getColumnIndex("day")), c.getInt(c.getColumnIndex("dayOfWeek")),
                         c.getString(c.getColumnIndex("category")), c.getInt(c.getColumnIndex("type")),
                         c.getInt(c.getColumnIndex("price")), c.getString(c.getColumnIndex("detail")),
-                        c.getInt(c.getColumnIndex("termsOfPayment"))).toJson())
+                        c.getInt(c.getColumnIndex("termsOfPayment")), c.getInt(c.getColumnIndex("isDeleted"))).toJson())
+                ids.add(c.getInt(c.getColumnIndex("_id")))
             }
         }
-        return array
+        return Pair(array, ids)
     }
 
-    // get ids in client's DB
-    fun getIdsInClient(a: Activity): MutableList<Int> {
-        val cursor = KakeiboDBAccess().readAllId(a)
-        val ids = mutableListOf<Int>()
-        // get all ids in client's DB
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                ids.add(cursor.getInt(cursor.getColumnIndex("_id")))
-            }
-        }
-        return ids
-    }
-
-    // parse json and get pairs of contentvalues and id
-    tailrec fun getContentValuesFromServer(result: JSONArray, idAndCv: MutableList<KakeiboItemForSync>, pos: Int)
-            : MutableList<KakeiboItemForSync> {
-        when (pos) {
-            result.length() -> {
-                return idAndCv
-            }
-            else -> {
-                val cv = ContentValues()
-                val obj = result.getJSONObject(pos)
-                // set values
-                cv.put("category", obj?.getString("category") ?: "")
-                cv.put("detail", obj?.getString("detail") ?: "")
-                cv.put("kakeiboName", Constants.KAKEIBONAME_MINE)
-                cv.put("year", obj?.getInt("year") ?: Constants.DEFAULT_YEAR)
-                cv.put("month", obj?.getInt("month") ?: 1)
-                cv.put("day", obj?.getInt("day") ?: 1)
-                cv.put("dayOfWeek", obj?.getInt("dayOfWeek") ?: 1)
-                cv.put("price", obj?.getInt("price") ?: 0)
-                cv.put("termsOfPayment", obj?.getInt("termsOfPayment") ?: Constants.CASH)
-                cv.put("type", obj?.getInt("type") ?: Constants.EXPENSE)
-                cv.put("isSynchronized", Constants.TRUE)
-                // set id and contentvalues
-                idAndCv.add(KakeiboItemForSync(obj?.getInt("id") ?: -1, cv))
-                return getContentValuesFromServer(result,  idAndCv, pos + 1)
-            }
-        }
-    }
-
-    tailrec fun getContentValuesForSync(myIds: MutableList<Int>, valFromSrv: MutableList<KakeiboItemForSync>, cvForInsert: MutableList<ContentValues>,
-                                        cvForUpdate: MutableList<KakeiboItemForSync>, index: Int): Pair<MutableList<ContentValues>, MutableList<KakeiboItemForSync>> {
-        if (index == valFromSrv.size) {
+    // make contentvalue from received JSON
+    tailrec fun getContentValuesFromServer(result: JSONArray, cvForInsert: MutableList<ContentValues>, cvForUpdate: MutableList<KakeiboItemForSync>, pos: Int)
+            : Pair<MutableList<ContentValues>, MutableList<KakeiboItemForSync>> {
+        if (pos >= result.length()) {
             return Pair(cvForInsert, cvForUpdate)
         }
-        when (existId(valFromSrv[index].id, myIds)) {
-            true -> cvForUpdate.add(valFromSrv[index])
-            false -> cvForInsert.add(valFromSrv[index].cv)
+        val cv = ContentValues()
+        val obj = result.getJSONObject(pos)
+        if (obj != null) {
+            // set values
+            cv.put("category", obj.getString("category") ?: "")
+            cv.put("detail", obj.getString("detail") ?: "")
+            cv.put("kakeiboName", Constants.KAKEIBONAME_MINE)
+            cv.put("year", obj.getInt("year"))
+            cv.put("month", obj.getInt("month"))
+            cv.put("day", obj.getInt("day"))
+            cv.put("dayOfWeek", obj.getInt("dayOfWeek"))
+            cv.put("price", obj.getInt("price"))
+            cv.put("termsOfPayment", obj.getInt("termsOfPayment"))
+            cv.put("type", obj.getInt("type"))
+            cv.put("isSynchronized", Constants.TRUE)
+            // set id and contentvalues
+            val id = obj.getInt("id")
+            when (id) {
+                -1 -> cvForInsert.add(cv)
+                else -> cvForUpdate.add(KakeiboItemForSync(id, cv))
+            }
         }
-        return getContentValuesForSync(myIds, valFromSrv, cvForInsert, cvForUpdate, index + 1)
-    }
-
-    fun existId(targetId: Int, myIds: MutableList<Int>): Boolean {
-        for (id in myIds) {
-            if (id == targetId) return true
-        }
-        return false
+        return getContentValuesFromServer(result, cvForInsert, cvForUpdate, pos + 1)
     }
 
     //===

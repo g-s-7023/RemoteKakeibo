@@ -12,49 +12,75 @@ import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.KakeiboItemForSync
 
-class KakeiboDBAccess {
+class KakeiboDBAccess(val a:Activity) {
 
-    fun insertKakeibo(a: Activity, cv: ContentValues) {
-        execWrite(a) { db: SQLiteDatabase ->
+    fun insertKakeibo(cv: ContentValues) {
+        execWrite { db: SQLiteDatabase ->
             db.insert(DBAccessHelper.TABLE_NAME, null, cv)
         }
     }
 
-    fun deleteKakeibo(a: Activity, id: Int) {
-        execWrite(a) { db: SQLiteDatabase ->
-            db.delete(DBAccessHelper.TABLE_NAME, "_id = ?", arrayOf(id.toString()))
-        }
-    }
-
-    fun updateKakeibo(a: FragmentActivity, id: Int, cv: ContentValues) {
-        execWrite(a) { db: SQLiteDatabase ->
+    // delete entry (logically)
+    fun deleteKakeibo(id: Int) {
+        val cv = ContentValues()
+        cv.put("isDeleted", Constants.TRUE)
+        execWrite { db: SQLiteDatabase ->
             db.update(DBAccessHelper.TABLE_NAME, cv, "_id = ?", arrayOf(id.toString()))
         }
     }
 
-    fun syncUpdate(a: FragmentActivity, items:MutableList<KakeiboItemForSync>){
-        execWrite(a) { db: SQLiteDatabase ->
+    fun updateKakeibo(id: Int, cv: ContentValues) {
+        execWrite{ db: SQLiteDatabase ->
+            db.update(DBAccessHelper.TABLE_NAME, cv, "_id = ?", arrayOf(id.toString()))
+        }
+    }
+
+    fun syncInsert(items:MutableList<ContentValues>){
+        execWrite { db: SQLiteDatabase ->
+            for (item in items) {
+                db.insert(DBAccessHelper.TABLE_NAME, null, item)
+            }
+        }
+    }
+
+    fun syncUpdate(items:MutableList<KakeiboItemForSync>){
+        execWrite{ db: SQLiteDatabase ->
             for (item in items) {
                 db.update(DBAccessHelper.TABLE_NAME, item.cv, "_id = ?", arrayOf(item.id.toString()))
             }
         }
     }
 
-    //insert
+    fun syncDelete(items:MutableList<KakeiboItemForSync>){
+        execWrite{ db: SQLiteDatabase ->
+            for (item in items) {
+                db.update(DBAccessHelper.TABLE_NAME, item.cv, "_id = ?", arrayOf(item.id.toString()))
+            }
+        }
+    }
 
+    fun setSynchronized(ids:MutableList<Int>){
+        val cv = ContentValues()
+        cv.put("isSynchronized", Constants.TRUE)
+        execWrite { db: SQLiteDatabase ->
+            for (id in ids){
+                db.update(DBAccessHelper.TABLE_NAME, cv, "_id = ?", arrayOf(id.toString()))
+            }
+        }
+    }
 
-    fun readKakeiboOfMonth(a: Activity, year: Int, month: Int): Cursor? {
-        return execRead(a) { db: SQLiteDatabase ->
+    fun readKakeiboOfMonth(year: Int, month: Int): Cursor? {
+        return execRead { db: SQLiteDatabase ->
             db.query(DBAccessHelper.TABLE_NAME,
                     arrayOf("_id", "year", "month", "day", "dayOfWeek", "category", "type", "price", "detail", "termsOfPayment"),
-                    "year = ? AND month = ?",
-                    arrayOf(year.toString(), month.toString()),
+                    "year = ? AND month = ? AND isDeleted = ?",
+                    arrayOf(year.toString(), month.toString(), Constants.FALSE.toString()),
                     null, null, "day ASC")
         }
     }
 
-    fun readUnsynchronizedEntry(a: Activity): Cursor? {
-        return execRead(a) { db: SQLiteDatabase ->
+    fun readUnsynchronizedEntry(): Cursor? {
+        return execRead { db: SQLiteDatabase ->
             db.query(DBAccessHelper.TABLE_NAME,
                     arrayOf("_id", "year", "month", "day", "dayOfWeek", "category", "type", "price", "detail", "termsOfPayment"),
                     "isSynchronized = ?",
@@ -63,15 +89,8 @@ class KakeiboDBAccess {
         }
     }
 
-    fun readAllId(a: Activity): Cursor? {
-        val ids = mutableListOf<Int>()
-        return execRead(a) { db: SQLiteDatabase ->
-            db.query(DBAccessHelper.TABLE_NAME, arrayOf("_id"), null, null, null, null, null)
-        }
-    }
-
     // execute function passed
-    private fun execWrite(a: Activity, f: (SQLiteDatabase) -> Unit) {
+    private fun execWrite(f: (SQLiteDatabase) -> Unit) {
         // create helper
         val helper = DBAccessHelper(a)
         // db
@@ -98,7 +117,7 @@ class KakeiboDBAccess {
         }
     }
 
-    private fun execRead(a: Activity, f: (SQLiteDatabase) -> Cursor?): Cursor? {
+    private fun execRead(f: (SQLiteDatabase) -> Cursor?): Cursor? {
         // create helper
         val helper = DBAccessHelper(a)
         // DB

@@ -15,7 +15,8 @@ class JsonKakeiboItem(val id: Int = -1,
                       val type: Int = Constants.EXPENSE,
                       val price: Int = 0,
                       val detail: String = "",
-                      val termsOfPayment: Int = Constants.CASH) {
+                      val termsOfPayment: Int = Constants.CASH,
+                      val isDeleted: Int = Constants.FALSE) {
 
     fun toJson(): JSONObject {
         val json = JSONObject()
@@ -29,6 +30,7 @@ class JsonKakeiboItem(val id: Int = -1,
         json.put("price", price)
         json.put("detail", detail)
         json.put("termsOfPayment", termsOfPayment)
+        json.put("isDeleted", isDeleted)
         return json
     }
 }
