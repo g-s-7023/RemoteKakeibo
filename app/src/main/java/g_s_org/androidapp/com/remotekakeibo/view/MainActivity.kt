@@ -3,6 +3,7 @@ package g_s_org.androidapp.com.remotekakeibo.view
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.view.KeyEvent
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.model.FragmentToActivityInterection
 
@@ -29,4 +30,6 @@ class MainActivity : AppCompatActivity(), FragmentToActivityInterection {
         val manager = supportFragmentManager
         manager.popBackStack()
     }
+
+
 }

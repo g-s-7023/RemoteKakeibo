@@ -28,6 +28,9 @@ class CalendarDialogFragment : DialogFragment() {
     private var currentYear = Constants.DEFAULT_YEAR
     private var currentMonth = 1
 
+    //===
+    //=== life cycle
+    //===
     override fun onAttach(context: Context?) {
         mCaller = context as Activity
         super.onAttach(context as Context)
@@ -50,6 +53,9 @@ class CalendarDialogFragment : DialogFragment() {
         return dialog
     }
 
+    //===
+    //=== initialize values
+    //===
     fun initValues() {
         // get arguments
         originalYear = arguments.getInt("ORIGINAL_YEAR")
@@ -71,7 +77,7 @@ class CalendarDialogFragment : DialogFragment() {
         (view.findViewById(R.id.bt_next_calendar) as Button).setOnClickListener { onNextMonthClicked(view) }
         // get first day of the month
         val firstDay = Calendar.getInstance()
-        firstDay.set(year, month, 1)
+        firstDay.set(year, month - 1, 1)
         // fill the calendar with days
         setMonth(view.findViewById(R.id.tl_days) as TableLayout, 1, 1,
                 firstDay.get(Calendar.DAY_OF_WEEK), firstDay.getActualMaximum(Calendar.DAY_OF_MONTH))
@@ -134,6 +140,7 @@ class CalendarDialogFragment : DialogFragment() {
     private tailrec fun setMonth(tl: TableLayout, weekOfMonth: Int, day: Int, firstDayOfWeek: Int, lastDay: Int) {
         when {
             (weekOfMonth >= tl.childCount) -> {
+                // after last week
                 return
             }
             (weekOfMonth == 1) -> {
@@ -142,6 +149,7 @@ class CalendarDialogFragment : DialogFragment() {
                 return setMonth(tl, weekOfMonth + 1, day + Constants.DAYS_OF_WEEK - firstDayOfWeek + 1, 0, lastDay)
             }
             else -> {
+                // middle weeks of month
                 setWeek(tl.getChildAt(weekOfMonth) as TableRow, 0, day, 0, lastDay)
                 return setMonth(tl, weekOfMonth + 1, day + Constants.DAYS_OF_WEEK, 0, lastDay)
             }

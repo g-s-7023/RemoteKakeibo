@@ -2,9 +2,12 @@ package g_s_org.androidapp.com.remotekakeibo.view
 
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
@@ -81,6 +84,23 @@ class KakeiboAddFragment : KakeiboInputFragment() {
 
     // hidden (no function)
     override fun onCenterButtonClicked() {}
+
+    // enter key(insert)
+    override fun onEnter(text: EditText, key: Int, event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN && key == KeyEvent.KEYCODE_ENTER) {
+            /*
+            // contentValues to insert
+            val cv = getContentValues(category, detail, selectedDate, priceStack, condition)
+            // insert
+            saveData(mCaller, cv, detail)
+            */
+            // close software keyboard
+            (mCaller.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(text.windowToken, InputMethodManager.RESULT_UNCHANGED_SHOWN)
+            return true
+        }
+        return false
+    }
 
     //===
     //=== business logic

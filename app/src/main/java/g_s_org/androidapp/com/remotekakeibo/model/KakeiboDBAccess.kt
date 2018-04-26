@@ -72,7 +72,7 @@ class KakeiboDBAccess(val a:Activity) {
     fun readKakeiboOfMonth(year: Int, month: Int): Cursor? {
         return execRead { db: SQLiteDatabase ->
             db.query(DBAccessHelper.TABLE_NAME,
-                    arrayOf("_id", "year", "month", "day", "dayOfWeek", "category", "type", "price", "detail", "termsOfPayment"),
+                    arrayOf("_id", "year", "month", "day", "dayOfWeek", "category", "type", "price", "detail", "termsOfPayment", "isSynchronized"),
                     "year = ? AND month = ? AND isDeleted = ?",
                     arrayOf(year.toString(), month.toString(), Constants.FALSE.toString()),
                     null, null, "day ASC")

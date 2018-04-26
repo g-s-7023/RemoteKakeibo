@@ -79,7 +79,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         // new entry
         (mCaller.findViewById(R.id.bt_new) as Button).setOnClickListener { onNewEntryClicked() }
         // synchronize
-        (mCaller.findViewById(R.id.bt_sync) as Button).setOnClickListener { onSyncClicked() }
+        //(mCaller.findViewById(R.id.bt_sync) as Button).setOnClickListener { onSyncClicked() }
     }
 
     //===
@@ -115,7 +115,6 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
 
     // sync button
     private fun onSyncClicked() {
-        /*
         // read entries yet to be synchronized
         val cursor = KakeiboDBAccess(mCaller).readUnsynchronizedEntry()
         // make list in json format and
@@ -134,7 +133,6 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
                 k.setSynchronized(ids)
             }
         }).execute()
-        */
     }
 
     // row

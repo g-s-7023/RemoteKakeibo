@@ -1,10 +1,13 @@
 package g_s_org.androidapp.com.remotekakeibo.view
 
 import android.content.ContentValues
+import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
+import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
@@ -31,6 +34,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
         this.initValues()
         super.setListeners()
     }
+
     //===
     //=== initialize value of each view and field
     //===
@@ -67,6 +71,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
         // set focus on price (not to show keyboard)
         (mCaller.findViewById(R.id.tv_priceValue) as TextView).requestFocus()
     }
+
     //===
     //=== listeners
     //===
@@ -80,14 +85,16 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
 
     // update button
     override fun onCenterButtonClicked() {
-        // contentValues to update
-        val cv = getContentValues((mCaller.findViewById(R.id.et_category) as EditText).text.toString(),
-                (mCaller.findViewById(R.id.et_detail) as EditText).text.toString(),
-                selectedDate, priceStack, condition)
-        // update
-        updateData(mCaller, selectedId, cv)
-        // back to list
-        pageBack(mCaller)
+        val category = (mCaller.findViewById(R.id.et_category) as EditText).text.toString()
+        if (category.isNotBlank()) {
+            // contentValues to update
+            val cv = getContentValues(category, (mCaller.findViewById(R.id.et_detail) as EditText).text.toString(),
+                    selectedDate, priceStack, condition)
+            // update
+            updateData(mCaller, selectedId, cv)
+            // back to list
+            pageBack(mCaller)
+        }
     }
 
     // cancel button
@@ -96,15 +103,36 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
         pageBack(mCaller)
     }
 
+    // enter key(update)
+    override fun onEnter(text: EditText, key: Int, event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN && key == KeyEvent.KEYCODE_ENTER) {
+            /*
+            // contentValues to update
+            val cv = getContentValues((mCaller.findViewById(R.id.et_category) as EditText).text.toString(),
+                    (mCaller.findViewById(R.id.et_detail) as EditText).text.toString(),
+                    selectedDate, priceStack, condition)
+            // update
+            updateData(mCaller, selectedId, cv)
+            // back to list
+            pageBack(mCaller)
+            */
+            // close software keyboard
+            (mCaller.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(text.windowToken, InputMethodManager.RESULT_UNCHANGED_SHOWN)
+            return true
+        }
+        return false
+    }
+
     //===
     //=== business logic
     //===
-    fun deleteData(a: FragmentActivity, id:Int) {
+    fun deleteData(a: FragmentActivity, id: Int) {
         // delete entry
         KakeiboDBAccess(a).deleteKakeibo(id)
     }
 
-    fun updateData(a: FragmentActivity, id:Int, cv: ContentValues) {
+    fun updateData(a: FragmentActivity, id: Int, cv: ContentValues) {
         // update DB
         KakeiboDBAccess(a).updateKakeibo(id, cv)
     }
@@ -116,6 +144,7 @@ class KakeiboUpdateFragment : KakeiboInputFragment() {
             throw UnsupportedOperationException("Listener is not implemented")
         }
     }
+
     //===
     //=== factory method
     //===

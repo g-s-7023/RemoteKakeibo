@@ -5,9 +5,11 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import g_s_org.androidapp.com.remotekakeibo.common.Constants.Companion.MAXDIGITS
@@ -64,7 +66,9 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
         // category textbox
         (mCaller.findViewById(R.id.et_category) as EditText).setOnFocusChangeListener { _, hasFocus -> onCategoryFocused(hasFocus) }
         // detail textbox
-        (mCaller.findViewById(R.id.et_detail) as EditText).setOnFocusChangeListener { _, hasFocus -> onDetailFocused(hasFocus) }
+        val detailText = (mCaller.findViewById(R.id.et_detail) as EditText)
+        detailText.setOnFocusChangeListener { _, hasFocus -> onDetailFocused(hasFocus) }
+        detailText.setOnKeyListener {v, key, event-> onEnter(detailText, key, event)}
         // card button
         (mCaller.findViewById(R.id.tv_card) as TextView).setOnClickListener { onCardSelected() }
         // cash button
@@ -178,6 +182,7 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
     abstract fun onLeftButtonClicked()
     abstract fun onRightButtonClicked()
     abstract fun onCenterButtonClicked()
+    abstract fun onEnter(text:EditText, key:Int, event: KeyEvent):Boolean
 
     // mCallback from calendar dialog
     override fun onDialogDateSelected(y: Int, m: Int, d: Int) {

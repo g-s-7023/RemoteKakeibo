@@ -40,6 +40,6 @@ class KakeiboDate(var year:Int = 1900, var month:Int = 1, var day:Int = 1, var d
     }
     // toString
     override fun toString(): String {
-        return year.toString() + "/" + month.toString() + "/" + day.toString() + "(" + Constants.WEEKNAME[dayOfWeek - 1] + ")"
+        return month.toString() + "/" + day.toString() + "(" + Constants.WEEKNAME[dayOfWeek - 1] + ")"
     }
 }
