@@ -26,7 +26,7 @@ import org.json.JSONArray
 import java.util.*
 
 
-class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallback, KakeiboListAdapter.OnKakeiboListItemClickListener {
+class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallback, KakeiboListAdapter.OnKakeiboListItemClickListener, HttpPostKakeibo.KakeiboSyncCallback {
     private lateinit var mCaller: FragmentActivity
     private var currentYearMonth = arrayOf(Constants.DEFAULT_YEAR, 1)
 
@@ -117,22 +117,10 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     private fun onSyncClicked() {
         // read entries yet to be synchronized
         val cursor = KakeiboDBAccess(mCaller).readUnsynchronizedEntry()
-        // make list in json format and
+        // make list of entries to be synchronized in json format
         val (jsonArray, ids) = getJsonArrayToSync(cursor)
         // upload json to server
-        HttpPostKakeibo(mCaller.getString(R.string.kakeibo_url), jsonArray, object : HttpPostKakeibo.KakeiboSyncCallback {
-            // callback after uploading
-            override fun callback(result: JSONArray) {
-                // get contentValues for insert and update
-                val (cvForInsert, cvForUpdate) = getContentValuesFromServer(result, mutableListOf(), mutableListOf(), 0)
-                // insert and update
-                val k = KakeiboDBAccess(mCaller)
-                k.syncInsert(cvForInsert)
-                k.syncUpdate(cvForUpdate)
-                // update isSynchronized
-                k.setSynchronized(ids)
-            }
-        }).execute()
+        HttpPostKakeibo(mCaller.getString(R.string.kakeibo_url), jsonArray, ids, this).execute()
     }
 
     // row
@@ -143,6 +131,18 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     // callback from dialog
     override fun onDialogYearMonthSelected(y: Int, m: Int) {
         setKakeiboListView(y, m)
+    }
+
+    // callback after uploading
+    override fun callback(result: JSONArray, ids:MutableList<Int>) {
+        // get contentValues for insert and update
+        val (cvForInsert, cvForUpdate) = getContentValuesFromServer(result, mutableListOf(), mutableListOf(), 0)
+        // insert and update
+        val k = KakeiboDBAccess(mCaller)
+        k.syncInsert(cvForInsert)
+        k.syncUpdate(cvForUpdate)
+        // update isSynchronized
+        k.setSynchronized(ids)
     }
 
     //===
@@ -255,10 +255,10 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         if (pos >= result.length()) {
             return Pair(cvForInsert, cvForUpdate)
         }
-        val cv = ContentValues()
         val obj = result.getJSONObject(pos)
         if (obj != null) {
             // set values
+            val cv = ContentValues()
             cv.put("category", obj.getString("category") ?: "")
             cv.put("detail", obj.getString("detail") ?: "")
             cv.put("kakeiboName", Constants.KAKEIBONAME_MINE)
@@ -274,7 +274,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
             val id = obj.getInt("id")
             when (id) {
                 // no id means data created in server
-                -1 -> cvForInsert.add(cv)
+                Constants.NO_ID -> cvForInsert.add(cv)
                 // positive id means data created in client and updated in server
                 else -> cvForUpdate.add(KakeiboItemForSync(id, cv))
             }

@@ -5,7 +5,7 @@ import java.util.*
 /**
  * Created by C170044 on 2018/04/03.
  */
-class KakeiboDate(var year:Int = 1900, var month:Int = 1, var day:Int = 1, var dayOfWeek: Int = 1) :Cloneable{
+class KakeiboDate(var year:Int = Constants.DEFAULT_YEAR, var month:Int = 1, var day:Int = 1, var dayOfWeek: Int = 1) :Cloneable{
     // set value from calendar
     fun setDate(cal:Calendar){
         year = cal.get(Calendar.YEAR)

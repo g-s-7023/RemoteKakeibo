@@ -15,46 +15,39 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
+import android.widget.NumberPicker
 
 import g_s_org.androidapp.com.remotekakeibo.R
 import g_s_org.androidapp.com.remotekakeibo.common.Constants
+import java.util.*
 
 
 class DatePickerDialogFragment : DialogFragment() {
     lateinit var mCaller: Activity
 
+    //===
+    //=== life cycle
+    //===
     override fun onAttach(context: Context?) {
         mCaller = context as Activity
         super.onAttach(context as Context)
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
-        // year and month when dialog is shown first
-        val originalYear = arguments.getInt("ORIGINAL_YEAR", Constants.DEFAULT_YEAR)
-        val originalMonth = arguments.getInt("ORIGINAL_MONTH", 1)
-
-        // datePicker in dialog
-        val picker = DatePicker(mCaller)
-        // not show "day"
-        val dayId = Resources.getSystem().getIdentifier("day", "id", "android")
-        (picker.findViewById(dayId) as View).visibility = View.GONE
-        // set initial value
-        picker.updateDate(originalYear, originalMonth - 1, 1)
-        // only show picker (deprecated)
-        /*
-        picker.spinnersShown = true
-        picker.calendarViewShown = false
-        */
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        // create view to display dialog
+        val pickerView = View.inflate(mCaller, R.layout.fragment_yearmonth_dialog, null)
+        // set picker
+        val (year, month) = setPicker(pickerView, arguments.getInt("ORIGINAL_YEAR", Constants.DEFAULT_YEAR), arguments.getInt("ORIGINAL_MONTH", 1))
         // build dialog
         val builder = AlertDialog.Builder(mCaller)
                 // set picker
-                .setView(picker)
+                .setView(pickerView)
                 .setTitle(R.string.title_yearandmonth)
                 .setPositiveButton(R.string.bt_ok) { _, _ ->
+                    // callback
                     val parent = parentFragment
-                    // set mCallback
                     if (parent is DatePickerCallback) {
-                        parent.onDialogYearMonthSelected(picker.year, picker.month + 1)
+                        parent.onDialogYearMonthSelected(year.value, month.value)
                     }
                     // close dialog
                     dismiss()
@@ -64,13 +57,31 @@ class DatePickerDialogFragment : DialogFragment() {
         // return alert dialog
         return builder.create()
     }
-
-    // mCallback
+    //===
+    //=== view setter
+    //===
+    fun setPicker(parent:View, year:Int, month:Int): Pair<NumberPicker, NumberPicker>{
+        // set year picker
+        val yearPicker = parent.findViewById(R.id.pk_year) as NumberPicker
+        yearPicker.maxValue = Calendar.getInstance().get(Calendar.YEAR)
+        yearPicker.minValue = Constants.DEFAULT_YEAR
+        yearPicker.value = year
+        // set month picker
+        val monthPicker = parent.findViewById(R.id.pk_month) as NumberPicker
+        monthPicker.maxValue = 12
+        monthPicker.minValue = 1
+        monthPicker.value = month
+        return Pair(yearPicker, monthPicker)
+    }
+    //===
+    //=== callback
+    //===
     interface DatePickerCallback {
         fun onDialogYearMonthSelected(year: Int, month: Int)
     }
-
-    // factory method
+    //===
+    //=== factory method
+    //===
     companion object {
         fun newInstance(y: Int, m: Int): DatePickerDialogFragment {
             // fragment

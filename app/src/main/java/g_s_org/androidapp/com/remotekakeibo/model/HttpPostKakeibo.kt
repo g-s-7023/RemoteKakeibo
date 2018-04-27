@@ -13,10 +13,10 @@ import java.net.URL
 import java.util.*
 
 
-class HttpPostKakeibo(val mUrlString: String, val mBody: JSONArray, val mCallback:WeakReference<KakeiboSyncCallback>)
+class HttpPostKakeibo(val mUrlString: String, val mBody: JSONArray, val mIds:MutableList<Int>, val mCallback:WeakReference<KakeiboSyncCallback>)
     : AsyncTask<Unit, Unit, JSONArray>() {
 
-    constructor(url:String, body:JSONArray, callback:KakeiboSyncCallback):this(url, body, WeakReference(callback))
+    constructor(url:String, body:JSONArray, ids:MutableList<Int>,callback:KakeiboSyncCallback):this(url, body, ids, WeakReference(callback))
 
     fun setListener(callback:KakeiboSyncCallback){
         mCallback.apply { callback }
@@ -70,7 +70,7 @@ class HttpPostKakeibo(val mUrlString: String, val mBody: JSONArray, val mCallbac
         // callback must be implemented by the caller
         val c = this.mCallback.get()
         if (c != null) {
-            c.callback(result)
+            c.callback(result, mIds)
         } else {
             Log.e("HttpPostKakeibo", "mCallback is not set")
         }
@@ -88,7 +88,7 @@ class HttpPostKakeibo(val mUrlString: String, val mBody: JSONArray, val mCallbac
         return sb.toString()
     }
 
-    interface KakeiboSyncCallback {
-        fun callback(result: JSONArray)
+    interface KakeiboSyncCallback{
+        fun callback(result: JSONArray, ids:MutableList<Int>)
     }
 }
