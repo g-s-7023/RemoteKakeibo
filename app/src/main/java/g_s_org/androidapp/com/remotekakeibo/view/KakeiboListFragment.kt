@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ import g_s_org.androidapp.com.remotekakeibo.common.KakeiboItemForSync
 import g_s_org.androidapp.com.remotekakeibo.common.KakeiboListItem
 import g_s_org.androidapp.com.remotekakeibo.model.*
 import org.json.JSONArray
+import org.json.JSONObject
 import java.util.*
 
 
@@ -79,7 +81,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         // new entry
         (mCaller.findViewById(R.id.bt_new) as Button).setOnClickListener { onNewEntryClicked() }
         // synchronize
-        //(mCaller.findViewById(R.id.bt_sync) as Button).setOnClickListener { onSyncClicked() }
+        (mCaller.findViewById(R.id.bt_sync) as Button).setOnClickListener { onSyncClicked() }
     }
 
     //===
@@ -115,12 +117,21 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
 
     // sync button
     private fun onSyncClicked() {
+        // test
+        val testArray = JSONArray()
+        val testObj = JSONObject()
+        testObj.put("id", 1)
+        testObj.put("name", "test1")
+        testArray.put(testObj)
+        HttpPostKakeibo(mCaller.getString(R.string.kakeibo_url), testArray, MutableList(1, {0}), this).execute()
+        /*
         // read entries yet to be synchronized
         val cursor = KakeiboDBAccess(mCaller).readUnsynchronizedEntry()
         // make list of entries to be synchronized in json format
         val (jsonArray, ids) = getJsonArrayToSync(cursor)
         // upload json to server
         HttpPostKakeibo(mCaller.getString(R.string.kakeibo_url), jsonArray, ids, this).execute()
+        */
     }
 
     // row
@@ -135,6 +146,9 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
 
     // callback after uploading
     override fun callback(result: JSONArray, ids:MutableList<Int>) {
+        // test
+        Log.d("kakeibo sync", "get result")
+        /*
         // get contentValues for insert and update
         val (cvForInsert, cvForUpdate) = getContentValuesFromServer(result, mutableListOf(), mutableListOf(), 0)
         // insert and update
@@ -143,6 +157,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         k.syncUpdate(cvForUpdate)
         // update isSynchronized
         k.setSynchronized(ids)
+        */
     }
 
     //===
@@ -237,12 +252,19 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         val ids = mutableListOf<Int>()
         if (c != null) {
             while (c.moveToNext()) {
-                array.put(JsonKakeiboItem(c.getInt(c.getColumnIndex("_id")),
-                        c.getInt(c.getColumnIndex("year")), c.getInt(c.getColumnIndex("month")),
-                        c.getInt(c.getColumnIndex("day")), c.getInt(c.getColumnIndex("dayOfWeek")),
-                        c.getString(c.getColumnIndex("category")), c.getInt(c.getColumnIndex("type")),
-                        c.getInt(c.getColumnIndex("price")), c.getString(c.getColumnIndex("detail")),
-                        c.getInt(c.getColumnIndex("termsOfPayment")), c.getInt(c.getColumnIndex("isDeleted"))).toJson())
+                array.put(JsonKakeiboItem(
+                        c.getInt(c.getColumnIndex("_id")),
+                        c.getInt(c.getColumnIndex("year")),
+                        c.getInt(c.getColumnIndex("month")),
+                        c.getInt(c.getColumnIndex("day")),
+                        c.getInt(c.getColumnIndex("dayOfWeek")),
+                        c.getString(c.getColumnIndex("category")),
+                        c.getInt(c.getColumnIndex("type")),
+                        c.getInt(c.getColumnIndex("price")),
+                        c.getString(c.getColumnIndex("detail")),
+                        c.getInt(c.getColumnIndex("termsOfPayment")),
+                        c.getInt(c.getColumnIndex("isDeleted"))
+                ).toJson())
                 ids.add(c.getInt(c.getColumnIndex("_id")))
             }
         }
