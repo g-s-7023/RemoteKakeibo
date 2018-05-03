@@ -103,7 +103,7 @@ class Constants{
         //===
         //=== timeout of http access
         //===
-        const val HTTP_TIMEOUT=100000
+        const val HTTP_TIMEOUT=10000
 
     }
 }

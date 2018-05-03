@@ -50,7 +50,7 @@ class HttpPostKakeibo(val mUrlString: String, val mBody: JSONArray, val mIds:Mut
             val statusCode = con.responseCode
             // get response body
             val stream = con.inputStream
-            responseString = readInputStream(stream)
+            responseString = readInputStream(StringBuilder(), BufferedReader(InputStreamReader(stream, "UTF-8")))
             stream.close()
             // convert to json object and return it
             return JSONArray(responseString)
@@ -77,15 +77,12 @@ class HttpPostKakeibo(val mUrlString: String, val mBody: JSONArray, val mIds:Mut
     }
 
     @Throws(IOException::class, UnsupportedEncodingException::class)
-    private fun readInputStream(buf: InputStream): String {
-        val sb = StringBuilder()
-        val br = BufferedReader(InputStreamReader(buf, "UTF-8"))
-        var line = br.readLine()
-        while (line != null) {
-            sb.append(line)
-            br.readLine()
+    tailrec fun readInputStream(sb:StringBuilder, br:BufferedReader):String{
+        val next = br.readLine()
+        return when(next){
+            null -> sb.toString()
+            else -> readInputStream(sb.append(next), br)
         }
-        return sb.toString()
     }
 
     interface KakeiboSyncCallback{

@@ -32,7 +32,7 @@ abstract class KakeiboInputFragment : Fragment(), CalendarDialogFragment.OnDialo
     protected var condition = Array<Int>(3, { -1 })
 
     //===
-    //=== mCallback from lifecycle
+    //=== life cycle
     //===
     override fun onAttach(context: Context?) {
         super.onAttach(context)

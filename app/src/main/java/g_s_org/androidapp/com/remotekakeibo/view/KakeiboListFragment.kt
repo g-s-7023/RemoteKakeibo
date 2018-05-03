@@ -118,12 +118,14 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     // sync button
     private fun onSyncClicked() {
         // test
+        val url = "https://remoetekakeibo-test.appspot.com/ping"
         val testArray = JSONArray()
         val testObj = JSONObject()
-        testObj.put("id", 1)
-        testObj.put("name", "test1")
+        testObj.put("Name", "test from client")
+        testObj.put("Code", 0)
         testArray.put(testObj)
-        HttpPostKakeibo(mCaller.getString(R.string.kakeibo_url), testArray, MutableList(1, {0}), this).execute()
+        HttpPostKakeibo(url, testArray, MutableList(1, {0}), this).execute()
+        Log.d("kakeibo sync", "http requested")
         /*
         // read entries yet to be synchronized
         val cursor = KakeiboDBAccess(mCaller).readUnsynchronizedEntry()
@@ -147,7 +149,13 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
     // callback after uploading
     override fun callback(result: JSONArray, ids:MutableList<Int>) {
         // test
-        Log.d("kakeibo sync", "get result")
+        val obj1 = result.getJSONObject(0)
+        val name1 = obj1.getString("Name")
+        val code1 = obj1.getInt("Code")
+        val obj2 = result.getJSONObject(1)
+        val name2 = obj2.getString("Name")
+        val code2 = obj2.getInt("Code")
+        Log.d("kakeibo sync", "get result0: " + name1 + " result1: " + name2)
         /*
         // get contentValues for insert and update
         val (cvForInsert, cvForUpdate) = getContentValuesFromServer(result, mutableListOf(), mutableListOf(), 0)

@@ -14,6 +14,7 @@ import g_s_org.androidapp.com.remotekakeibo.common.KakeiboItemForSync
 
 class KakeiboDBAccess(val a:Activity) {
 
+    // insert entry
     fun insertKakeibo(cv: ContentValues) {
         execWrite { db: SQLiteDatabase ->
             db.insert(DBAccessHelper.TABLE_NAME, null, cv)
@@ -29,6 +30,7 @@ class KakeiboDBAccess(val a:Activity) {
         }
     }
 
+    // update entry
     fun updateKakeibo(id: Int, cv: ContentValues) {
         execWrite{ db: SQLiteDatabase ->
             db.update(DBAccessHelper.TABLE_NAME, cv, "_id = ?", arrayOf(id.toString()))
@@ -59,6 +61,7 @@ class KakeiboDBAccess(val a:Activity) {
         }
     }
 
+    // set isSynchronized of entry which has the id same as passed id
     fun setSynchronized(ids:MutableList<Int>){
         val cv = ContentValues()
         cv.put("isSynchronized", Constants.TRUE)
