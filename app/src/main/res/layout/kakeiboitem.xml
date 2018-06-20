@@ -1,89 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
     <!-- header -->
     <RelativeLayout
         android:id="@+id/rl_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:background="@color/darkgray">
+
         <TextView
             android:id="@+id/tv_listDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentLeft="true"
+            android:textColor="@color/white" />
+
         <TextView
             android:id="@+id/tv_listSubtotalExpense"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp"
+            android:textColor="@color/white" />
+
         <TextView
             android:id="@+id/tv_listSubtotalIncome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/tv_listSubtotalExpense"/>
+            android:layout_toLeftOf="@+id/tv_listSubtotalExpense"
+            android:textColor="@color/white" />
     </RelativeLayout>
-    <!-- income / expense -->
+    <!-- dummy -->
     <LinearLayout
-        android:id="@+id/ll_image"
-        android:layout_width="50dp"
+        android:id="@+id/ll_dummy"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_below="@id/rl_header"
-        android:layout_above="@+id/ll_dummy"
-        android:background="#ffffff"
-        android:orientation="horizontal">
+        android:orientation="horizontal"></LinearLayout>
+    <!-- income / expense -->
+    <RelativeLayout
+        android:id="@+id/rl_image"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@+id/buttomLine"
+        android:layout_below="@id/ll_dummy"
+        android:background="@color/white">
         <ImageView
             android:id="@+id/iv_listType"
-            android:src="@drawable/in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:contentDescription="@id/iv_listType"
             android:scaleType="fitCenter"
-            android:contentDescription="@id/iv_listType"/>
-    </LinearLayout>
+            android:src="@drawable/in" />
+    </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/ll_categoryAndDetails"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_toRightOf="@+id/ll_image"
         android:layout_below="@id/rl_header"
+        android:layout_toRightOf="@+id/rl_image"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/tv_listCategory"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
+
         <TextView
             android:id="@+id/tv_listDetail"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
     </LinearLayout>
+
     <LinearLayout
         android:id="@+id/ll_listPrice"
         android:layout_width="100dp"
         android:layout_height="match_parent"
+        android:layout_above="@id/buttomLine"
         android:layout_alignParentRight="true"
-        android:gravity="right"
         android:layout_below="@+id/rl_header"
-        android:layout_above="@+id/ll_dummy"
+        android:gravity="right"
         android:orientation="horizontal">
+
         <TextView
             android:id="@+id/tv_listPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginRight="10dp"/>
+            android:layout_marginRight="10dp" />
     </LinearLayout>
-    <!-- dummy -->
-    <LinearLayout
-        android:id="@id/ll_dummy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/ll_categoryAndDetails">
-    </LinearLayout>
+    <!-- bottom line of an item -->
+    <View
+        android:id="@id/buttomLine"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@id/ll_categoryAndDetails"
+        android:background="@color/black"/>
 </RelativeLayout>

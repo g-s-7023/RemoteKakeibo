@@ -128,9 +128,9 @@ class KakeiboDBAccess(val a:Activity) {
         // cursor
         var cursor: Cursor? = null
         try {
-            // データベースオブジェクト取得
+            // get DB object
             db = helper.readableDatabase
-            // データ取得
+            // get data
             cursor = f(db)
         } catch (e: Exception) {
             throw e

@@ -107,7 +107,7 @@ class KakeiboListAdapter(private val mValues: MutableList<KakeiboListItem>, priv
         // layout of header (for summary)
         val headerLayout = mView.findViewById(R.id.rl_header) as RelativeLayout
         // layout of image
-        val imageLayout = mView.findViewById(R.id.ll_image) as LinearLayout
+        val imageLayout = mView.findViewById(R.id.rl_image) as RelativeLayout
         // layout of category and detail
         val categoryAndDetailLayout = mView.findViewById(R.id.ll_categoryAndDetails) as LinearLayout
         // layout of price

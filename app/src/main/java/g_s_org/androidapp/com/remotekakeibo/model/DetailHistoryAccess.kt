@@ -44,28 +44,7 @@ class DetailHistoryAccess(val ctx:Context) {
             else -> getKey(srcVals, dstList, input, delPos, pos + 1)
         }
     }
-/*
-    // insert new value to destination array
-    private tailrec fun insertPreference(src: SharedPreferences, dst: Array<String>, dstIndex: Int, keys: Array<String>, keyIndex: Int, input: String): Array<String> {
-        when (dstIndex) {
-            0 -> {
-                // the head is replaced by input value
-                dst[dstIndex] = input
-                return dst
-            }
-            else -> {
-                val s = src.getString(keys[keyIndex], "")
-                if (s == input) {
-                    // src is not copied if the list has the input value in the middle of it
-                    return insertPreference(src, dst, dstIndex, keys, keyIndex - 1, input)
-                }
-                // copy src to dst
-                dst[dstIndex] = s
-                return insertPreference(src, dst, dstIndex - 1, keys, keyIndex - 1, input)
-            }
-        }
-    }
-*/
+
     // get array of values stored in preference
     fun getPreference(): Array<String> {
         // loaded preferences

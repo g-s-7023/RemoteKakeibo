@@ -105,8 +105,9 @@
             android:id="@+id/tv_totalExpense"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/gray"
+            android:background="@color/darkgray"
             android:text="@string/tv_totalExpense"
+            android:textColor="@color/white"
             android:textSize="20sp" />
 
         <TextView
@@ -121,9 +122,11 @@
             android:id="@+id/tv_totalIncome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/gray"
+            android:background="@color/darkgray"
             android:text="@string/tv_totalIncome"
-            android:textSize="20sp" />
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            />
 
         <TextView
             android:id="@+id/tv_totalIncomeValue"

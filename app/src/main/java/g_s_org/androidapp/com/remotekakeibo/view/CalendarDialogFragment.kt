@@ -17,6 +17,11 @@ import g_s_org.androidapp.com.remotekakeibo.common.Constants
 import java.util.*
 
 
+
+// todo
+// カレンダーを開いて日付を選択した際に、曜日がおかしくなる
+
+
 class CalendarDialogFragment : DialogFragment() {
     // activity which call this fragment
     lateinit var mCaller: Activity
@@ -120,7 +125,7 @@ class CalendarDialogFragment : DialogFragment() {
         // get parent fragment
         val parent = parentFragment
         if (parent is OnDialogInteractionListener) {
-            // mCallback
+            // callback
             parent.onDialogDateSelected(currentYear, currentMonth, day)
             // close dialog
             dismiss()
