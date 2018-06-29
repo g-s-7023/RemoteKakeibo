@@ -117,7 +117,9 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
 
     // sync button
     private fun onSyncClicked() {
+        mCaller.getIdToken()
         // test
+        /*
         val url = "https://remoetekakeibo-test.appspot.com/ping"
         val testArray = JSONArray()
         val testObj = JSONObject()
@@ -126,6 +128,7 @@ class KakeiboListFragment : Fragment(), DatePickerDialogFragment.DatePickerCallb
         testArray.put(testObj)
         HttpPostKakeibo(url, testArray, MutableList(1, {0}), this).execute()
         Log.d("kakeibo sync", "http requested")
+        */
         /*
         // read entries yet to be synchronized
         val cursor = KakeiboDBAccess(mCaller).readUnsynchronizedEntry()

@@ -104,6 +104,9 @@ class Constants{
         //=== timeout of http access
         //===
         const val HTTP_TIMEOUT=10000
-
+        //===
+        //=== result code of the actuvity for google sign in
+        //===
+        const val RC_GET_TOKEN = 9002
     }
 }

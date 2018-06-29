@@ -141,6 +141,14 @@ class CalendarDialogFragment : DialogFragment() {
     //===
     //=== business logic
     //===
+    /**
+     * set week to the table(month)
+     * @param tl tablelayout to be filled
+     * @param weekOfMonth current week number on the month
+     * @param day current day on the month
+     * @param firstDayOfWeek "day of the week" of the first day
+     * @param lastDay the last day on the month
+     */
     // set week to the table(month)
     private tailrec fun setMonth(tl: TableLayout, weekOfMonth: Int, day: Int, firstDayOfWeek: Int, lastDay: Int) {
         when {
@@ -160,8 +168,14 @@ class CalendarDialogFragment : DialogFragment() {
             }
         }
     }
-
-    // set day to the table row(week)
+    /**
+     * set day to the table row(week)
+     * @param tr tablerow to be filled
+     * @param col current column of the row
+     * @param day current day on the month
+     * @param firstCol first column of the row(0 except in the first row)
+     * @param lastDay the last day on the month
+     */
     private tailrec fun setWeek(tr: TableRow, col: Int, day: Int, firstCol: Int, lastDay: Int) {
         when {
             (col >= tr.childCount) -> {
